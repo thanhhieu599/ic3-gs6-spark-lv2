@@ -1,0 +1,1101 @@
+<!doctype html>
+<html lang="vi">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>IC3 GS6 Spark Level 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: exam-software shell — dark title bar, white toolbar, paper question sheet on a cool grey desk, progress strip at the bottom. */
+:root{
+  --bg:#e9eef1; --paper:#ffffff; --ink:#1b2a33; --muted:#5a6a74; --line:#d4dde2; --line-strong:#9fb0b9;
+  --bar:#173c4f; --bar-fg:#f1f7fa; --bar-icon:#173c4f; --bar-line:rgba(255,255,255,.28); --bar-warn:#ffd27a;
+  --accent:#0b7a8b; --accent-fg:#ffffff; --accent-soft:#d6eef1;
+  --chip:#dde4e8; --chip-hover:#cdd7dc; --sel:#173c4f; --sel-fg:#ffffff;
+  --target:#173c4f; --target-fg:#f1f7fa;
+  --mute-btn:#68777f; --mute-btn-fg:#ffffff;
+  --ok:#1d7f46; --ok-soft:#dbf1e3; --bad:#bf3329; --bad-soft:#f8dfdc; --warn:#b06f12; --warn-soft:#fbedd3;
+  --scrim:rgba(14,28,37,.48);
+  --hw-body:#e3e8eb; --hw-edge:#b6c1c7; --hw-metal:#9aa5ad; --hw-port:#22292e; --hw-gold:#c9a24a; --hw-blue:#2f7fd8; --hw-ink:#28343b; --hw-field:#f7f9fa; --hw-btn-fg:#ffffff;
+  --f-display:"Be Vietnam Pro","Segoe UI",system-ui,sans-serif;
+  --f-body:"Be Vietnam Pro","Segoe UI",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  --qs:1;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;margin:0}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0}
+.ico{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- shared bar ---------- */
+.titlebar{background:var(--bar);color:var(--bar-fg);display:flex;align-items:center;gap:12px;padding:8px 16px;font-size:13px;flex-wrap:wrap}
+.titlebar .brand{font-weight:700;letter-spacing:.02em}
+.titlebar .mode{opacity:.75}
+.titlebar .tb-time{margin-left:auto;font:700 15px var(--f-mono);font-variant-numeric:tabular-nums}
+.titlebar .tb-time.low{color:var(--bar-warn)}
+.tb-btn{background:transparent;border:1px solid var(--bar-line);color:var(--bar-fg);border-radius:3px;padding:4px 10px;cursor:pointer;font-size:13px}
+.tb-btn:hover{background:var(--bar-line)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--bar);color:var(--bar-fg);border:0;border-radius:3px;padding:8px 14px;font-weight:600;font-size:14px;cursor:pointer;min-height:36px;text-decoration:none}
+.btn:hover{filter:brightness(1.18)}
+.btn:disabled{opacity:.4;cursor:not-allowed;filter:none}
+.btn-mute{background:var(--mute-btn);color:var(--mute-btn-fg)}
+.btn-end{background:var(--accent);color:var(--accent-fg)}
+.btn-line{background:transparent;color:var(--ink);border:1px solid var(--line-strong)}
+.btn-line:hover{background:var(--chip);filter:none}
+.btn-danger{background:transparent;color:var(--bad);border:1px solid var(--bad)}
+.btn .ico{width:18px;height:18px}
+
+/* ---------- exam ---------- */
+.exam{display:flex;flex-direction:column;height:100%}
+.toolbar{background:var(--paper);border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;padding:10px 16px}
+.grp{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pos{font-family:var(--f-mono);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.pos b{color:var(--ink)}
+.ib{width:40px;height:36px;display:inline-grid;place-items:center;background:transparent;border:1px solid transparent;color:var(--bar-icon);border-radius:3px;cursor:pointer;font:800 17px var(--f-body);letter-spacing:-.02em}
+.ib:hover{background:var(--chip)}
+.ib:disabled{opacity:.3;cursor:not-allowed;background:transparent}
+.ib .ico{width:25px;height:25px}
+.ib.on{background:var(--accent-soft);border-color:var(--accent)}
+.mark{display:inline-flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);cursor:pointer;user-select:none;margin-right:6px}
+.mark input{width:18px;height:18px;accent-color:var(--warn);margin:0}
+.exam.review [data-live]{display:none!important}
+.exam:not(.review) [data-review]{display:none!important}
+
+.stage{flex:1;overflow:auto;padding-block:20px 28px;padding-inline:16px}
+.sheet{max-width:1180px;margin-inline:auto;background:var(--paper);border:1px solid var(--line)}
+.stem{padding:20px 24px 16px;border-bottom:1px solid var(--line);font-size:calc(15px * var(--qs))}
+.dom{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);margin-bottom:6px}
+.instr{margin:10px 0 0;color:var(--muted);font-size:.92em}
+.figure{max-width:720px;margin-top:14px}
+.figure svg,.hsbox svg{display:block;width:100%;height:auto}
+.grip{text-align:center;color:var(--muted);letter-spacing:.35em;font-size:10px;padding-top:6px;user-select:none}
+.answers{padding:18px 24px 26px;font-size:calc(15px * var(--qs))}
+.locked .opt,.locked .chip,.locked .hs,.locked td[data-r]{cursor:default}
+
+.opts{display:flex;flex-direction:column;gap:10px;max-width:820px;margin-inline:auto}
+.opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--chip);border:2px solid transparent;padding:12px 16px;cursor:pointer;border-radius:2px;color:var(--ink)}
+.opt:hover{background:var(--chip-hover)}
+.opt .mk{flex:none;width:18px;height:18px;border:2px solid var(--muted);border-radius:50%}
+.opts.multi .mk{border-radius:3px}
+.opt.picked{background:var(--sel);color:var(--sel-fg)}
+.opt.picked .mk{border-color:var(--sel-fg);background:var(--sel-fg);box-shadow:inset 0 0 0 3px var(--sel)}
+.opt.right{background:var(--ok-soft);border-color:var(--ok);color:var(--ink)}
+.opt.right.missed{border-style:dashed}
+.opt.right.picked .mk{border-color:var(--ok);background:var(--ok);box-shadow:inset 0 0 0 3px var(--ok-soft)}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--ink)}
+.opt.wrong .mk{border-color:var(--bad);background:var(--bad);box-shadow:inset 0 0 0 3px var(--bad-soft)}
+.tag{margin-left:auto;flex:none;font-size:.72em;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ok)}
+.tag.bad{color:var(--bad)}
+
+.yn-wrap{overflow-x:auto}
+.yn{width:100%;border-collapse:collapse;min-width:420px}
+.yn th{background:var(--bar);color:var(--bar-fg);font-weight:600;padding:9px 10px;width:96px;border:1px solid var(--bar)}
+.yn th:first-child{background:transparent;border:0;width:auto}
+.yn td{border:1px solid var(--line-strong);padding:14px 16px}
+.yn td[data-r]{text-align:center;cursor:pointer}
+.yn td[data-r]:hover{background:var(--chip)}
+.yn input{width:20px;height:20px;accent-color:var(--accent);margin:0;pointer-events:none}
+.yn tr.right td.st{background:var(--ok-soft)}
+.yn tr.wrong td.st{background:var(--bad-soft)}
+.yn td.key{background:var(--ok-soft);box-shadow:inset 0 0 0 2px var(--ok)}
+.yn .verdict{display:block;font-size:.75em;font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:.05em}
+.yn tr.right .verdict{color:var(--ok)} .yn tr.wrong .verdict{color:var(--bad)}
+
+.match{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:20px 28px;align-items:start}
+.pool{display:flex;flex-direction:column;gap:10px;min-height:56px;padding:6px;border:1px dashed transparent;border-radius:3px}
+.pool.over{border-color:var(--accent);background:var(--accent-soft)}
+.pool-empty{color:var(--muted);font-size:.9em;text-align:center;padding:12px}
+.pairs{display:flex;flex-direction:column;gap:20px;min-width:0}
+.pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:stretch}
+.slot{min-height:48px;border:1px solid var(--line-strong);background:var(--paper);border-radius:2px;display:flex;flex-direction:column;justify-content:center;padding:4px;cursor:pointer}
+.slot.armed{border-style:dashed;border-color:var(--accent)}
+.slot.over{border-color:var(--accent);background:var(--accent-soft)}
+.slot.ok{border:2px solid var(--ok);background:var(--ok-soft)}
+.slot.bad{border:2px solid var(--bad);background:var(--bad-soft)}
+.target{background:var(--target);color:var(--target-fg);padding:12px 16px;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:2px;min-height:48px}
+.chip{position:relative;display:block;width:100%;background:var(--chip);border:2px solid transparent;padding:11px 36px;text-align:center;cursor:grab;border-radius:2px;color:var(--ink);touch-action:manipulation}
+.chip:hover{background:var(--chip-hover)}
+.chip.sel{border-color:var(--accent);background:var(--accent-soft)}
+.chip.dragging{opacity:.45}
+.chip .mv{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:17px;height:17px;color:var(--muted)}
+.slot .chip{background:var(--chip)}
+.slot.ok .chip,.slot.bad .chip{background:transparent}
+.should{font-size:.85em;color:var(--bad);padding:2px 8px 4px;text-align:center}
+.should b{color:var(--ink)}
+
+.hsbox{max-width:760px;margin-inline:auto;border:1px solid var(--line)}
+.hs{cursor:pointer;outline:none}
+.hs .hit{fill:transparent;stroke:transparent;stroke-width:2}
+.hs:hover .hit,.hs:focus-visible .hit{fill:var(--accent-soft);stroke:var(--accent)}
+.hs.picked .hit{fill:var(--accent-soft);stroke:var(--accent);stroke-width:3}
+.hs.right .hit{fill:var(--ok-soft);stroke:var(--ok);stroke-width:3}
+.hs.wrongpick .hit{fill:var(--bad-soft);stroke:var(--bad);stroke-width:3}
+.hw-body{fill:var(--hw-body);stroke:var(--hw-edge);stroke-width:1.5}
+.hw-plain{fill:var(--hw-body)}
+.hw-metal{fill:var(--hw-metal)} .hw-port{fill:var(--hw-port)} .hw-gold{fill:var(--hw-gold)} .hw-blue{fill:var(--hw-blue)} .hw-field{fill:var(--hw-field)}
+.hw-fill{fill:var(--hw-ink)}
+.hw-ico{fill:none;stroke:var(--hw-ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hw-text{fill:var(--hw-ink);font-family:var(--f-body);font-size:13px}
+.hw-ibtn{fill:var(--hw-body);stroke:var(--hw-edge)}
+.hw-btn-text{fill:var(--hw-btn-fg);font-family:var(--f-body);font-weight:600;font-size:14px;text-anchor:middle}
+.hw-big{fill:var(--hw-ink);font-family:var(--f-body);font-size:19px;text-anchor:middle}
+.hw-label{fill:var(--bad);font-family:var(--f-body);font-weight:700;font-size:22px;text-anchor:middle}
+
+.note{max-width:820px;margin:0 auto 18px;padding:10px 14px;background:var(--warn-soft);color:var(--ink);border:1px solid var(--warn);font-size:14px}
+.fbwrap{padding:0 24px 24px}
+.fb-box{max-width:820px;margin-inline:auto;border:1px solid var(--line);background:var(--bg);padding:16px 18px;font-size:calc(14.5px * var(--qs))}
+.fb-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-weight:700;margin-bottom:8px}
+.fb-key{margin:0 0 8px}
+.fb-exp{margin:0;color:var(--ink)}
+.fb-check{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px;color:var(--muted);font-size:13px}
+.pill{display:inline-block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:3px 10px;border-radius:999px;background:var(--chip);color:var(--ink)}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.warn{background:var(--warn-soft);color:var(--warn)}
+
+.foot{background:var(--paper);border-top:1px solid var(--line);padding:10px 16px;display:flex;flex-direction:column;gap:8px}
+.segs{display:flex;gap:3px}
+.seg{flex:1;height:10px;min-width:0;border:0;padding:0;background:var(--line);cursor:pointer;border-radius:1px;position:relative}
+.seg.ans{background:var(--accent)}
+.seg.mk{background:var(--warn)}
+.seg.ok{background:var(--ok)} .seg.bad{background:var(--bad)}
+.seg.cur{outline:2px solid var(--ink);outline-offset:1px}
+.foot-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+
+/* ---------- home & result ---------- */
+.page{max-width:1080px;margin-inline:auto;padding:28px 16px 64px;display:flex;flex-direction:column;gap:30px}
+.eyebrow{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin:0 0 8px}
+.hero h1{font-size:clamp(26px,4.2vw,42px);line-height:1.12;font-weight:800;letter-spacing:-.015em;max-width:22ch}
+.lede{max-width:66ch;color:var(--muted);margin:12px 0 0;font-size:16px}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin:22px 0 0}
+.facts div{background:var(--paper);padding:14px 16px}
+.facts dt{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.facts dd{margin:4px 0 0;font:700 24px var(--f-mono);font-variant-numeric:tabular-nums}
+.facts dd small{font:500 13px var(--f-body);color:var(--muted)}
+.modes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.card{background:var(--paper);border:1px solid var(--line);padding:22px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.card h2{font-size:21px}
+.card p{margin:0;color:var(--muted)}
+.card ul{margin:0;padding-left:18px;color:var(--muted)}
+.card .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:auto}
+.resume{background:var(--warn-soft);border:1px solid var(--warn);padding:16px 18px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.resume b{display:block}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.cb{display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border:1px solid var(--line-strong);border-radius:999px;font-size:13px;cursor:pointer;user-select:none}
+.cb input{accent-color:var(--accent);margin:0}
+.cb:has(input:checked){background:var(--accent-soft);border-color:var(--accent)}
+.row{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:14px}
+.row select{font:inherit;padding:6px 8px;border:1px solid var(--line-strong);background:var(--paper);color:var(--ink);border-radius:3px}
+.row label{display:inline-flex;gap:7px;align-items:center}
+.row input[type=checkbox]{accent-color:var(--accent)}
+.sec h2{font-size:20px;margin-bottom:12px}
+.sec-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.sec-head h2{margin:0}
+.tbl-wrap{overflow-x:auto;background:var(--paper);border:1px solid var(--line)}
+.tbl{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+.tbl th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;padding:10px 14px;border-bottom:1px solid var(--line)}
+.tbl td{padding:10px 14px;border-top:1px solid var(--line)}
+.tbl tr:first-child td{border-top:0}
+.num{text-align:right;font-family:var(--f-mono)}
+.empty{padding:22px;color:var(--muted);text-align:center}
+.small-btn{padding:4px 10px;min-height:30px;font-size:13px}
+
+.score-head{display:flex;flex-wrap:wrap;gap:24px;align-items:flex-end;justify-content:space-between}
+.score{font:700 clamp(48px,9vw,76px)/1 var(--f-mono);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.score small{font-size:.35em;color:var(--muted);font-weight:500}
+.bars{display:flex;flex-direction:column;gap:12px;background:var(--paper);border:1px solid var(--line);padding:18px}
+.bar-row{display:grid;grid-template-columns:minmax(120px,210px) minmax(0,1fr) 64px;gap:14px;align-items:center;font-size:14px}
+.track{height:10px;background:var(--line);border-radius:5px;overflow:hidden}
+.fill{height:100%;background:var(--ok);border-radius:5px}
+.fill.low{background:var(--bad)}
+.cells{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:6px}
+.qcell{height:42px;border:1px solid var(--line-strong);background:var(--paper);font:600 14px var(--f-mono);cursor:pointer;position:relative;border-radius:2px;color:var(--ink)}
+.qcell:hover{border-color:var(--accent)}
+.qcell.ans{background:var(--accent-soft);border-color:var(--accent)}
+.qcell.skip{border-style:dashed}
+.qcell.mk::after{content:"";position:absolute;top:4px;right:4px;width:8px;height:8px;background:var(--warn);border-radius:50%}
+.qcell.cur{outline:2px solid var(--ink);outline-offset:1px}
+.qcell.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.qcell.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--muted);margin:12px 0 0}
+.legend span{display:inline-flex;gap:6px;align-items:center}
+.legend i{width:14px;height:14px;border:1px solid var(--line-strong);display:inline-block;background:var(--paper)}
+.legend i.ans{background:var(--accent-soft);border-color:var(--accent)}
+.legend i.mk{background:var(--warn);border-color:var(--warn);border-radius:50%;width:9px;height:9px}
+.legend i.skip{border-style:dashed}
+.legend i.ok{background:var(--ok-soft);border-color:var(--ok)} .legend i.bad{background:var(--bad-soft);border-color:var(--bad)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tab{border:1px solid var(--line-strong);background:transparent;padding:5px 12px;border-radius:999px;cursor:pointer;font-size:13px;color:var(--ink)}
+.tab.on{background:var(--bar);color:var(--bar-fg);border-color:var(--bar)}
+.foot-note{color:var(--muted);font-size:13px;max-width:80ch}
+
+.scrim{position:fixed;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
+.modal{background:var(--paper);color:var(--ink);max-width:700px;width:100%;max-height:min(88vh,760px);overflow:auto;padding:22px;border:1px solid var(--line);box-shadow:0 24px 60px rgba(0,0,0,.28)}
+.modal h2{font-size:20px;margin-bottom:12px}
+.modal p{margin:0 0 10px}
+.mfoot{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:18px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom, 0px));transform:translateX(-50%);background:var(--bar);color:var(--bar-fg);padding:10px 18px;border-radius:4px;z-index:60;max-width:calc(100% - 32px);font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+
+@media (max-width:760px){
+  .modes{grid-template-columns:1fr}
+  .facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .match{grid-template-columns:1fr}
+  .pool{flex-direction:row;flex-wrap:wrap}
+  .pool .chip{width:auto;flex:1 1 140px}
+  .stem{padding:16px}
+  .answers{padding:16px}
+  .fbwrap{padding:0 16px 16px}
+  .bar-row{grid-template-columns:1fr 54px}
+  .bar-row .track{grid-column:1 / -1;grid-row:2}
+}
+@media (max-width:520px){
+  .lbl{display:none}
+  .toolbar{padding:8px 12px}
+  .pair{grid-template-columns:1fr;gap:6px}
+}
+@media (prefers-reduced-motion: no-preference){
+  .opt,.chip,.slot,.seg{transition:background-color .12s,border-color .12s}
+}
+</style>
+
+<!-- ================= HOME ================= -->
+<div id="home" class="view"></div>
+
+<!-- ================= EXAM ================= -->
+<section id="exam" class="exam" hidden>
+  <div class="titlebar">
+    <button class="tb-btn" id="bHome" type="button">← Trang chủ</button>
+    <span class="brand">IC3 GS6 Spark · Level 2</span>
+    <span class="mode" id="candName"></span>
+    <span class="mode" id="modeLabel">Thi thử</span>
+    <span class="tb-time" id="timer" aria-live="off">50:00</span>
+  </div>
+  <div class="toolbar">
+    <div class="grp">
+      <button class="btn" id="bPrev" type="button"><svg class="ico" viewBox="0 0 24 24"><path d="M4 4v16M20 12H8m5-5-5 5 5 5"/></svg><span class="lbl">Trước</span></button>
+      <button class="btn btn-mute" id="bReset" type="button" data-live><svg class="ico" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"/></svg><span class="lbl">Đặt lại</span></button>
+      <span class="pos"><b id="qpos">1/45</b> <span id="qid"></span></span>
+    </div>
+    <div class="grp">
+      <button class="ib" id="bList" type="button" title="Danh sách câu hỏi" aria-label="Danh sách câu hỏi"><svg class="ico" viewBox="0 0 24 24"><path d="M9 6h12M9 12h12M9 18h12"/><circle cx="4.5" cy="6" r="1.3"/><circle cx="4.5" cy="12" r="1.3"/><circle cx="4.5" cy="18" r="1.3"/></svg></button>
+      <button class="ib" id="bSave" type="button" title="Lưu và thoát" aria-label="Lưu và thoát" data-live><svg class="ico" viewBox="0 0 24 24"><path d="M5 3h11l3 3v15H5z"/><path d="M8 3v5h8V3M8 21v-7h8v7"/></svg></button>
+      <button class="ib" id="bFont" type="button" title="Cỡ chữ" aria-label="Đổi cỡ chữ">AA</button>
+      <button class="ib" id="bHint" type="button" title="Xem đáp án (chỉ chế độ Luyện tập)" aria-label="Xem đáp án" data-live><svg class="ico" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg></button>
+    </div>
+    <div class="grp">
+      <label class="mark" data-live><span>Đánh dấu xem lại</span><input type="checkbox" id="markChk"></label>
+      <button class="btn" id="bSkip" type="button" data-live><span class="lbl">Bỏ qua</span><svg class="ico" viewBox="0 0 24 24"><path d="M4 17a8 8 0 0 1 14-6l2 2M20 7v6h-6"/></svg></button>
+      <button class="btn" id="bNext" type="button"><span class="lbl">Tiếp</span><svg class="ico" viewBox="0 0 24 24"><path d="M20 4v16M4 12h12m-5-5 5 5-5 5"/></svg></button>
+      <button class="btn btn-end" id="bResult" type="button" data-review>Bảng kết quả</button>
+    </div>
+  </div>
+  <main class="stage" id="stage">
+    <article class="sheet">
+      <div class="stem">
+        <div class="dom" id="qdomain"></div>
+        <div id="qtext"></div>
+        <div id="qimg"></div>
+        <p class="instr" id="qinstr"></p>
+      </div>
+      <div class="grip" aria-hidden="true">○○○○</div>
+      <div class="answers" id="answers"></div>
+      <div id="note" class="note" role="status" hidden></div>
+      <div class="fbwrap" id="fb"></div>
+    </article>
+  </main>
+  <footer class="foot">
+    <div class="segs" id="segs"></div>
+    <div class="foot-row"><span id="stat"></span><button class="btn btn-end" id="bSubmit" type="button" data-live>Nộp bài</button></div>
+  </footer>
+</section>
+
+<!-- ================= RESULT ================= -->
+<div id="result" class="view" hidden></div>
+
+<div id="modal" class="scrim" hidden><div class="modal" role="dialog" aria-modal="true" id="modalBox"></div></div>
+<div id="toast" class="toast" role="status" hidden></div>
+
+<script>
+/* =====================================================================
+   NGÂN HÀNG 100 CÂU HỎI — IC3 GS6 Spark Level 2 (7 lĩnh vực GS6)
+   Dạng câu: single | multi | yesno | match (ghép cặp / sắp xếp) | hotspot
+   Muốn thêm câu: chép một khối {...} cùng dạng và sửa nội dung.
+   ===================================================================== */
+const DOMAINS=['Cơ bản về công nghệ','Công dân số','Quản lý thông tin','Tạo nội dung','Giao tiếp','Cộng tác','An toàn & bảo mật'];
+const BANK=[
+/* ======================= 1. CƠ BẢN VỀ CÔNG NGHỆ (16) ======================= */
+{d:0,t:'match',q:'Ghép mỗi thuật ngữ về hệ điều hành với mô tả phù hợp.',
+ items:['Driver','Daemon','Mã nguồn mở (Open Source)','Khởi động (Boot)','Access Token','Firmware'],
+ targets:['Phần mềm công khai mã nguồn; bất kỳ ai cũng có thể xem, sửa đổi và chia sẻ miễn phí.','Quá trình bật máy: phần cứng được kiểm tra, hệ điều hành và các trình điều khiển được nạp vào bộ nhớ.','Chương trình nhỏ giúp hệ điều hành giao tiếp và điều khiển một thiết bị phần cứng.','Chương trình chạy ngầm, bắt đầu cùng lúc khởi động và hoạt động liên tục để hỗ trợ đa nhiệm.'],
+ a:[2,3,0,1],
+ e:'Open Source = mã nguồn mở; Boot = khởi động; Driver = trình điều khiển thiết bị; Daemon = tiến trình chạy nền. Access Token là "vé" xác nhận bạn đã đăng nhập; Firmware là phần mềm nằm sẵn bên trong phần cứng, nên không khớp mô tả nào.'},
+{d:0,t:'multi',q:'Bạn có một máy tính để bàn và muốn máy chạy nhanh hơn để chơi game mượt hơn. Bạn quyết định nâng cấp phần cứng.\nHai nâng cấp nào giúp máy chạy nhanh hơn?',
+ o:['ROM','Ổ cứng HDD dung lượng lớn hơn','Ổ đĩa flash USB','Ổ cứng thể rắn (SSD)','RAM'],a:[3,4],
+ e:'RAM là bộ nhớ làm việc: càng nhiều RAM, máy càng chạy được nhiều chương trình cùng lúc mà không giật. SSD đọc/ghi nhanh hơn HDD rất nhiều nên game và máy khởi động nhanh hơn. ROM không nâng cấp được; USB và HDD lớn hơn chỉ thêm chỗ chứa, không tăng tốc.'},
+{d:0,t:'match',img:'ports',q:'Quan sát hình ảnh để xác định các loại cổng kết nối. Ghép tên với cổng kết nối tương ứng.',
+ items:['VGA (chỉ hình ảnh)','Ethernet','HDMI','USB','Âm thanh (chỉ âm thanh)','DisplayPort'],
+ targets:['Cổng A','Cổng B','Cổng C','Cổng D','Cổng E'],a:[0,1,2,3,4],
+ e:'A – VGA: hình thang có 15 lỗ chân, chỉ truyền hình ảnh. B – Ethernet: cắm dây mạng. C – HDMI: truyền cả hình ảnh và âm thanh. D – USB: cắm chuột, bàn phím, USB (lõi xanh là USB 3.0). E – Jack tròn 3.5 mm: chỉ âm thanh (tai nghe, micro).'},
+{d:0,t:'match',order:true,q:'Sắp xếp các đơn vị lưu trữ theo thứ tự từ NHỎ đến LỚN.',
+ items:['Kilobyte (KB)','Megabyte (MB)','Gigabyte (GB)','Terabyte (TB)'],targets:['1 – Nhỏ nhất','2','3','4 – Lớn nhất'],a:[0,1,2,3],
+ e:'KB < MB < GB < TB. Mỗi đơn vị lớn gấp khoảng 1.024 lần đơn vị liền trước. Một bức ảnh điện thoại khoảng vài MB; một bộ phim khoảng vài GB.'},
+{d:0,t:'single',q:'Bạn muốn kết nối tai nghe không dây với điện thoại để nghe nhạc. Bạn cần bật công nghệ nào?',
+ o:['Bluetooth','Ethernet','HDMI','Chế độ máy bay'],a:0,
+ e:'Bluetooth kết nối không dây ở khoảng cách ngắn (khoảng 10 m) cho tai nghe, loa, chuột, bàn phím. Ethernet và HDMI là kết nối có dây; chế độ máy bay sẽ tắt các kết nối không dây.'},
+{d:0,t:'yesno',q:'Với mỗi phát biểu về điện toán đám mây (cloud), hãy chọn Yes nếu đúng hoặc No nếu sai.',
+ rows:['Tệp lưu trên đám mây có thể mở từ nhiều thiết bị có Internet.','Google Docs và Word bản web chạy trên trình duyệt, không cần cài đặt.','Lưu trữ đám mây hoạt động hoàn toàn không cần Internet.','OneDrive, Google Drive và iCloud là các dịch vụ lưu trữ đám mây.'],a:[1,1,0,1],
+ e:'Đám mây là máy chủ của nhà cung cấp, bạn truy cập qua Internet. Không có Internet thì chỉ mở được những tệp đã tải sẵn về máy.'},
+{d:0,t:'single',q:'Bạn cắm máy in mới vào máy tính bằng cáp USB nhưng máy tính báo "Không nhận ra thiết bị". Bạn nên làm gì trước tiên?',
+ o:['Cài đặt lại hệ điều hành','Cài đặt driver (trình điều khiển) của máy in','Thay cáp mạng','Mua thêm RAM'],a:1,
+ e:'Máy tính cần driver để "hiểu" và điều khiển thiết bị. Tải driver từ trang web của hãng máy in hoặc dùng Windows Update.'},
+{d:0,t:'multi',q:'Thiết bị nào sau đây là thiết bị đầu vào (đưa thông tin VÀO máy tính)?',
+ o:['Bàn phím','Máy in','Micro','Loa','Màn hình thường (không cảm ứng)'],a:[0,2],
+ e:'Thiết bị đầu vào: bàn phím, chuột, micro, webcam, máy quét. Thiết bị đầu ra: máy in, loa, màn hình. Màn hình cảm ứng vừa là đầu vào vừa là đầu ra.'},
+{d:0,t:'hotspot',svg:'taskbar',q:'Laptop của bạn chưa vào được mạng. Nhấp vào biểu tượng trên thanh tác vụ (taskbar) để xem danh sách mạng Wi-Fi.',a:5,
+ e:'Biểu tượng Wi-Fi (các vòng cung) nằm ở góc phải taskbar, cạnh biểu tượng loa và pin.'},
+{d:0,t:'single',q:'Trên Windows, tổ hợp phím nào mở công cụ chụp một vùng màn hình?',
+ o:['Ctrl + Alt + Delete','Windows + Shift + S','Alt + F4','Windows + L'],a:1,
+ e:'Windows + Shift + S: chụp vùng màn hình. Ctrl + Alt + Delete: màn hình bảo mật. Alt + F4: đóng cửa sổ. Windows + L: khóa máy.'},
+{d:0,t:'single',q:'Thứ Sáu tuần sau lớp bạn kiểm tra Toán. Bạn muốn điện thoại tự nhắc trước 1 ngày. Cách tốt nhất là gì?',
+ o:['Ghi vào giấy nhớ dán lên bàn','Tạo sự kiện trong ứng dụng Lịch (Calendar) và đặt lời nhắc trước 1 ngày','Chụp màn hình thời khóa biểu','Đặt hình nền điện thoại là chữ "Kiểm tra Toán"'],a:1,
+ e:'Lịch số (Google Calendar, Outlook, Lịch trên điện thoại) cho phép tạo sự kiện, đặt lời nhắc (reminder), lặp lại hằng tuần và chia sẻ cho người khác.'},
+{d:0,t:'single',q:'Một ứng dụng trên máy tính bị "treo", không bấm được gì. Bạn nên làm gì?',
+ o:['Rút điện máy tính ngay lập tức','Mở Task Manager (Ctrl + Shift + Esc), chọn ứng dụng đó rồi bấm End task','Xóa ứng dụng khỏi máy','Đợi đến ngày mai'],a:1,
+ e:'Task Manager cho phép đóng riêng ứng dụng bị treo mà không ảnh hưởng chương trình khác. Rút điện đột ngột có thể làm mất dữ liệu chưa lưu.'},
+{d:0,t:'yesno',q:'Với mỗi phát biểu về trình duyệt web, hãy chọn Yes nếu đúng hoặc No nếu sai.',
+ rows:['Trình duyệt web chính là Internet.','Trình duyệt web là công cụ tìm kiếm (search engine).','Trình duyệt web là ứng dụng lấy và hiển thị thông tin từ World Wide Web.','Trình duyệt dùng URL để mở trang web, hình ảnh và video.'],a:[0,0,1,1],
+ e:'Trình duyệt (Chrome, Edge, Firefox, Safari) là phần mềm. Internet là mạng lưới kết nối toàn cầu. Google, Bing là công cụ tìm kiếm, tức là các trang web chạy bên trong trình duyệt.'},
+{d:0,t:'single',q:'Bạn muốn cập nhật các ứng dụng trên điện thoại Android lên phiên bản mới nhất. Bạn vào đâu?',
+ o:['Ứng dụng Máy ảnh','Cửa hàng Google Play','Ứng dụng Danh bạ','Cài đặt hình nền'],a:1,
+ e:'Ứng dụng trên Android được cập nhật qua Google Play; trên iPhone/iPad qua App Store. Nên bật cập nhật tự động để nhận bản vá bảo mật.'},
+{d:0,t:'hotspot',svg:'browser',q:'Trang web bị tải lỗi giữa chừng. Nhấp vào nút để tải lại trang.',a:2,
+ e:'Nút tải lại (mũi tên vòng tròn) nằm cạnh nút Quay lại và Tiến tới. Phím tắt: F5.'},
+{d:0,t:'single',q:'Khi bật Chế độ máy bay (Airplane mode) trên điện thoại, điều gì xảy ra?',
+ o:['Điện thoại tắt nguồn','Các kết nối không dây (mạng di động, Wi-Fi, Bluetooth) bị tắt','Tất cả ứng dụng bị xóa','Pin được sạc nhanh hơn gấp đôi'],a:1,
+ e:'Chế độ máy bay tắt sóng điện thoại và kết nối không dây. Bạn vẫn dùng được ứng dụng ngoại tuyến (ảnh, nhạc đã tải). Có thể bật lại riêng Wi-Fi/Bluetooth nếu cần.'},
+
+/* ======================= 2. CÔNG DÂN SỐ (13) ======================= */
+{d:1,t:'single',q:'Bạn tìm thấy một bức ảnh có giấy phép Creative Commons BY-NC. Bạn được dùng ảnh này như thế nào?',
+ o:['Dùng cho mọi mục đích, không cần ghi tên tác giả','Dùng cho bài tập ở trường (không bán) và ghi tên tác giả','Chỉ được xem, không được tải về','In lên áo để bán, miễn là ghi tên tác giả'],a:1,
+ e:'BY = phải ghi tên tác giả; NC = không dùng để kiếm tiền. Bài tập ở trường là phi thương mại nên được dùng, nhưng phải ghi nguồn.'},
+{d:1,t:'yesno',q:'Với mỗi phát biểu về bản quyền, hãy chọn Yes nếu đúng hoặc No nếu sai.',
+ rows:['Ảnh tìm thấy trên Google đều được tự do sử dụng.','Bài hát, phim, truyện tranh đều có thể được bảo vệ bản quyền.','Tác phẩm thuộc phạm vi công cộng (Public Domain) được dùng mà không cần xin phép.','Ghi tên tác giả luôn đủ để dùng bất kỳ tác phẩm nào.'],a:[0,1,1,0],
+ e:'Có trên mạng không có nghĩa là miễn phí. Với tác phẩm còn bản quyền, cần giấy phép (như Creative Commons) hoặc xin phép tác giả; ghi tên thôi là chưa đủ.'},
+{d:1,t:'multi',q:'Ba hành vi nào thể hiện một công dân số tốt?',
+ o:['Kiểm tra thông tin trước khi chia sẻ','Đăng ảnh bạn bè mà không hỏi ý kiến','Lịch sự, tôn trọng khi bình luận','Giữ bí mật mật khẩu và thông tin cá nhân của người khác','Chia sẻ ngay tin giật gân để mọi người biết'],a:[0,2,3],
+ e:'Công dân số tốt: kiểm chứng trước khi chia sẻ, cư xử lịch sự, tôn trọng quyền riêng tư của mình và người khác.'},
+{d:1,t:'single',q:'"Dấu chân số" (digital footprint) là gì?',
+ o:['Dấu vân tay dùng để mở khóa điện thoại','Tất cả dấu vết bạn để lại trên mạng: bài đăng, bình luận, ảnh, lịch sử tìm kiếm','Số bước chân ứng dụng sức khỏe đếm được','Dung lượng còn trống trên ổ cứng'],a:1,
+ e:'Dấu chân số có thể tồn tại rất lâu và người khác có thể tìm thấy. Hãy suy nghĩ kỹ trước khi đăng.'},
+{d:1,t:'single',q:'Một bạn liên tục nhắn tin chế giễu bạn trên mạng xã hội. Bạn nên làm gì?',
+ o:['Nhắn lại những lời tương tự','Xóa hết tin nhắn để quên đi','Không trả lời, chụp màn hình làm bằng chứng, chặn và báo cho thầy cô hoặc bố mẹ','Đăng ảnh của bạn đó lên mạng để trả đũa'],a:2,
+ e:'Khi bị bắt nạt trên mạng: không đáp trả, lưu bằng chứng, chặn, báo cáo cho nền tảng và người lớn tin cậy. Xóa tin nhắn sẽ làm mất bằng chứng.'},
+{d:1,t:'match',q:'Ghép mỗi khái niệm với mô tả phù hợp.',
+ items:['Bản quyền (Copyright ©)','Phạm vi công cộng (Public Domain)','Creative Commons','Sử dụng hợp lý (Fair Use)','Nhãn hiệu (Trademark ™)'],
+ targets:['Tác giả giữ mọi quyền; muốn dùng phải xin phép.','Tác phẩm hết thời hạn bảo hộ; ai cũng dùng được tự do.','Tác giả cho phép dùng theo điều kiện ghi sẵn (ghi tên, không bán...).','Trích một phần nhỏ cho học tập, bình luận mà không cần xin phép.'],a:[0,1,2,3],
+ e:'Nhãn hiệu (Trademark) bảo vệ tên và logo của thương hiệu, không phải quyền sử dụng tác phẩm, nên là đáp án nhiễu.'},
+{d:1,t:'yesno',q:'Với mỗi phát biểu về cách cư xử trên mạng (netiquette), hãy chọn Yes nếu đúng hoặc No nếu sai.',
+ rows:['VIẾT TOÀN CHỮ IN HOA thường bị hiểu là đang hét.','Nên chuyển tiếp tin đồn chưa rõ thật giả vào nhóm lớp.','Nên hỏi ý kiến trước khi đăng ảnh có mặt người khác.','Bình luận ẩn danh thì không cần lịch sự.'],a:[1,0,1,0],
+ e:'Quy tắc ứng xử áp dụng cho mọi nơi trên mạng, kể cả khi ẩn danh. Tin đồn chưa kiểm chứng có thể làm tổn thương người khác.'},
+{d:1,t:'single',q:'Bạn đăng ảnh lên trang web của lớp. Việc nào giúp người khiếm thị dùng trình đọc màn hình hiểu nội dung ảnh?',
+ o:['Tăng độ sáng ảnh','Thêm văn bản thay thế (Alt Text) mô tả ảnh','Đổi ảnh sang định dạng GIF','Đặt ảnh làm hình nền'],a:1,
+ e:'Trình đọc màn hình sẽ đọc to phần Alt Text. Word, PowerPoint và mạng xã hội đều có ô nhập Alt Text cho ảnh.'},
+{d:1,t:'single',q:'Bạn học online và chơi game nhiều giờ liền nên bị mỏi mắt. Thói quen nào giúp bảo vệ mắt?',
+ o:['Tăng độ sáng màn hình tối đa','Quy tắc 20-20-20: cứ 20 phút, nhìn xa khoảng 6 mét trong 20 giây','Ngồi thật gần màn hình','Dùng thiết bị trong phòng tối'],a:1,
+ e:'Quy tắc 20-20-20 giúp mắt nghỉ. Ngoài ra nên ngồi cách màn hình 50–70 cm, đủ ánh sáng và đứng dậy vận động sau mỗi giờ.'},
+{d:1,t:'multi',q:'Hai cách nào giúp bạn tự kiểm soát thời gian dùng thiết bị số?',
+ o:['Dùng tính năng Screen Time / Digital Wellbeing để đặt giới hạn thời gian','Bật chế độ Không làm phiền khi học bài','Mang điện thoại lên giường để lướt trước khi ngủ','Bật thông báo của mọi ứng dụng','Chơi game liên tục cho đến khi hết pin'],a:[0,1],
+ e:'Screen Time (iPhone) và Digital Wellbeing (Android) cho biết bạn dùng ứng dụng bao lâu và cho phép đặt giới hạn. Chế độ Không làm phiền giúp tập trung.'},
+{d:1,t:'single',q:'Bạn làm video giới thiệu trường để đăng lên YouTube. Bạn nên chọn nhạc nền như thế nào?',
+ o:['Dùng bài hát nổi tiếng đang thịnh hành','Dùng nhạc miễn phí bản quyền, ví dụ từ Thư viện âm thanh của YouTube','Tải nhạc từ một trang web bất kỳ','Thu âm lại bài hát nổi tiếng từ loa'],a:1,
+ e:'Dùng nhạc có bản quyền mà không xin phép có thể khiến video bị gỡ hoặc tắt tiếng. Thư viện âm thanh YouTube cung cấp nhạc được phép sử dụng.'},
+{d:1,t:'single',q:'Hành động nào sau đây là đạo văn (plagiarism)?',
+ o:['Trích một câu trong sách và ghi rõ tên sách, tác giả','Chép nguyên bài viết trên mạng rồi nộp như bài của mình','Đọc nhiều nguồn rồi tự viết lại theo ý hiểu và ghi nguồn','Hỏi thầy cô cách trích dẫn'],a:1,
+ e:'Đạo văn là lấy ý tưởng hoặc câu chữ của người khác mà nhận là của mình. Luôn ghi nguồn khi dùng thông tin của người khác.'},
+{d:1,t:'match',q:'Ghép mỗi tính năng hỗ trợ tiếp cận (accessibility) với người dùng được hỗ trợ.',
+ items:['Trình đọc màn hình (Narrator)','Phụ đề (Captions)','Kính lúp (Magnifier)','Nhập liệu bằng giọng nói','Chế độ máy bay'],
+ targets:['Người khiếm thị: nghe máy tính đọc nội dung trên màn hình','Người khiếm thính: đọc lời thoại khi xem video','Người nhìn kém: phóng to một phần màn hình','Người khó dùng bàn phím: nói để máy tính gõ chữ'],a:[0,1,2,3],
+ e:'Windows: Settings > Accessibility. Chế độ máy bay không phải tính năng hỗ trợ tiếp cận.'},
+
+/* ======================= 3. QUẢN LÝ THÔNG TIN (14) ======================= */
+{d:2,t:'single',q:'Bạn muốn Google chỉ tìm các trang có CHÍNH XÁC cụm từ hệ mặt trời. Bạn gõ từ khóa thế nào?',
+ o:['hệ mặt trời','"hệ mặt trời"','hệ + mặt + trời','#hệ mặt trời'],a:1,
+ e:'Đặt cụm từ trong dấu ngoặc kép để tìm chính xác cụm từ đó theo đúng thứ tự.'},
+{d:2,t:'match',q:'Ghép mỗi cách tìm kiếm với công dụng của nó.',
+ items:['"..." (ngoặc kép)','- (dấu trừ)','site:','filetype:','OR','* (dấu sao)'],
+ targets:['Tìm chính xác cả cụm từ','Bỏ các kết quả có từ đứng ngay sau','Chỉ tìm trong một trang web','Chỉ tìm loại tệp (pdf, pptx...)'],a:[0,1,2,3],
+ e:'Ví dụ: "khủng long" site:edu.vn filetype:pdf -đồ chơi. OR tìm một trong hai từ; * thay cho một từ bất kỳ.'},
+{d:2,t:'multi',q:'Bạn tìm tài liệu cho bài thuyết trình Khoa học. Ba dấu hiệu nào cho thấy trang web đáng tin cậy?',
+ o:['Có tên tác giả hoặc tổ chức uy tín','Có rất nhiều quảng cáo nhấp nháy','Có ngày đăng và được cập nhật gần đây','Có ghi nguồn tham khảo, kiểm tra được ở nơi khác','Màu sắc đẹp và nhiều hình động'],a:[0,2,3],
+ e:'Kiểm tra: AI viết? KHI NÀO viết? DỰA VÀO ĐÂU? Giao diện đẹp hay xuất hiện đầu trang tìm kiếm không chứng minh thông tin đúng.'},
+{d:2,t:'single',q:'Tên miền nào thường dùng cho trường học và cơ sở giáo dục ở Việt Nam?',
+ o:['.com.vn','.edu.vn','.net','.shop'],a:1,
+ e:'.edu.vn: giáo dục; .gov.vn: cơ quan nhà nước; .com.vn: doanh nghiệp. .net, .shop thì ai cũng đăng ký được.'},
+{d:2,t:'yesno',q:'Với mỗi phát biểu về tệp và thư mục, hãy chọn Yes nếu đúng hoặc No nếu sai.',
+ rows:['Tệp .docx được tạo bằng Microsoft Word.','Tệp đã xóa vào Thùng rác (Recycle Bin) có thể khôi phục khi chưa dọn thùng rác.','Nén tệp thành .zip giúp giảm dung lượng và gom nhiều tệp thành một.','Đổi tên bai-tap.docx thành bai-tap.pdf sẽ biến tệp thành PDF.'],a:[1,1,1,0],
+ e:'Đổi đuôi tệp không chuyển định dạng mà chỉ làm tệp mở không được. Muốn có PDF, dùng File > Save As (hoặc Export) > PDF.'},
+{d:2,t:'match',order:true,q:'Sắp xếp các bước tìm thông tin cho bài tập theo đúng thứ tự.',
+ items:['Xác định mình cần tìm thông tin gì','Chọn từ khóa và tìm kiếm','Kiểm tra độ tin cậy của nguồn','Tổng hợp, viết bài và ghi nguồn'],targets:['Bước 1','Bước 2','Bước 3','Bước 4'],a:[0,1,2,3],
+ e:'Xác định nhu cầu → tìm → đánh giá → sử dụng và ghi nguồn.'},
+{d:2,t:'single',q:'Cookie trên trình duyệt là gì?',
+ o:['Một loại virus','Tệp nhỏ do trang web lưu trên máy để ghi nhớ đăng nhập, giỏ hàng, cài đặt của bạn','Phần mềm chặn quảng cáo','Bản sao của toàn bộ trang web'],a:1,
+ e:'Cookie giúp trang web "nhớ" bạn. Khi dùng máy tính chung ở trường, hãy đăng xuất và xóa lịch sử, cookie trước khi rời đi.'},
+{d:2,t:'single',q:'Bạn muốn làm bài tập trên máy tính ở trường, laptop ở nhà và điện thoại, luôn mở được bản mới nhất. Bạn nên lưu tệp ở đâu?',
+ o:['Gửi email tệp cho chính mình mỗi lần sửa','Thư mục đám mây đồng bộ (OneDrive, Google Drive)','Chỉ lưu trên Desktop máy ở trường','Chép vào USB rồi để ở trường'],a:1,
+ e:'Dịch vụ đám mây tự đồng bộ tệp trên mọi thiết bị đăng nhập cùng tài khoản và giữ lịch sử phiên bản.'},
+{d:2,t:'match',q:'Ghép mỗi đuôi tệp với loại nội dung tương ứng.',
+ items:['.xlsx','.pptx','.mp4','.jpg','.exe','.mp3'],targets:['Bảng tính','Bài trình chiếu','Video','Hình ảnh'],a:[0,1,2,3],
+ e:'.exe là tệp chương trình (cẩn thận khi tải về), .mp3 là âm thanh.'},
+{d:2,t:'hotspot',svg:'taskbar',q:'Bạn muốn mở các thư mục để sắp xếp bài tập. Nhấp vào biểu tượng trên taskbar để mở File Explorer.',a:2,
+ e:'File Explorer có biểu tượng thư mục màu vàng. Phím tắt: Windows + E.'},
+{d:2,t:'hotspot',svg:'browser',q:'Bạn muốn lưu trang web đang xem vào Dấu trang (Bookmark) để lần sau mở lại nhanh. Nhấp vào vị trí phù hợp.',a:4,
+ e:'Biểu tượng ngôi sao cuối thanh địa chỉ dùng để thêm dấu trang. Phím tắt: Ctrl + D.'},
+{d:2,t:'single',q:'Tên tệp nào giúp bạn và thầy cô dễ tìm và nhận biết nhất?',
+ o:['tailieu1.docx','BaiTap_KhoaHoc_Nhom3_2026-10-10.docx','aaaaa.docx','Moi.docx'],a:1,
+ e:'Tên tệp tốt cho biết nội dung, người làm và ngày tháng. Dùng ngày dạng năm-tháng-ngày để tệp tự sắp xếp đúng thứ tự.'},
+{d:2,t:'single',q:'Bạn vừa lưu một tệp nhưng quên lưu ở thư mục nào. Cách nhanh nhất để tìm lại là gì?',
+ o:['Làm lại bài từ đầu','Gõ tên tệp vào ô tìm kiếm của File Explorer hoặc xem mục Gần đây (Recent)','Khởi động lại máy tính','Xóa bớt tệp khác'],a:1,
+ e:'Ô tìm kiếm trên taskbar/File Explorer và danh sách Recent trong Word, Excel giúp tìm lại tệp vừa dùng.'},
+{d:2,t:'single',q:'Bạn nên dùng Wikipedia cho bài tập như thế nào?',
+ o:['Chép nguyên văn vì Wikipedia luôn đúng','Dùng làm điểm bắt đầu, rồi kiểm tra các nguồn tham khảo ghi ở cuối bài','Không bao giờ được đọc Wikipedia','Chỉ xem hình ảnh'],a:1,
+ e:'Ai cũng có thể sửa Wikipedia, nên hãy dùng nó để hiểu tổng quan, rồi đọc và trích dẫn các nguồn gốc ở mục Tham khảo.'},
+
+/* ======================= 4. TẠO NỘI DUNG (15) ======================= */
+{d:3,t:'single',q:'Bạn cần chèn logo có nền trong suốt lên slide. Định dạng ảnh nào phù hợp nhất?',
+ o:['JPG','PNG','BMP','MP4'],a:1,
+ e:'PNG hỗ trợ nền trong suốt và giữ ảnh sắc nét. JPG không có nền trong suốt; MP4 là video.'},
+{d:3,t:'multi',q:'Hai nguyên tắc nào giúp slide thuyết trình dễ nhìn, chuyên nghiệp?',
+ o:['Mỗi slide một ý chính, ít chữ','Màu chữ tương phản rõ với màu nền','Dùng thật nhiều hiệu ứng bay nhảy','Chép cả đoạn văn dài lên slide','Dùng 5 phông chữ khác nhau cho vui mắt'],a:[0,1],
+ e:'Slide chỉ hỗ trợ lời nói: ít chữ, tương phản cao, tối đa 2 phông chữ, hiệu ứng vừa phải.'},
+{d:3,t:'yesno',q:'Với mỗi phát biểu về Microsoft Word, hãy chọn Yes nếu đúng hoặc No nếu sai.',
+ rows:['Track Changes ghi lại các chỉnh sửa để người khác đồng ý hoặc từ chối.','Dùng kiểu Heading cho tiêu đề giúp tạo mục lục tự động.','Nội dung ở Header (đầu trang) chỉ hiện ở trang đầu tiên.','Save As luôn ghi đè lên tệp gốc.'],a:[1,1,0,0],
+ e:'Header/Footer lặp lại trên mọi trang. Save As tạo tệp mới (tên, vị trí hoặc định dạng khác), tệp gốc vẫn còn nguyên.'},
+{d:3,t:'single',q:'Trong Excel, điểm của 9 bạn nằm ở ô B2 đến B10. Công thức nào tính điểm trung bình?',
+ o:['=SUM(B2:B10)','=AVERAGE(B2:B10)','=AVERAGE(B2+B10)','=MEAN(B2:B10)'],a:1,
+ e:'AVERAGE tính trung bình cộng; B2:B10 nghĩa là từ B2 đến B10. Excel không có hàm MEAN.'},
+{d:3,t:'match',q:'Ghép mỗi hàm Excel với công dụng của nó.',
+ items:['SUM','AVERAGE','MAX','MIN','COUNT','IF'],
+ targets:['Tính tổng','Tìm số lớn nhất','Tìm số nhỏ nhất','Đếm số ô có chứa số'],a:[0,2,3,4],
+ e:'AVERAGE tính trung bình; IF trả kết quả khác nhau tùy điều kiện đúng hay sai.'},
+{d:3,t:'single',q:'Bạn sao chép công thức xuống các dòng dưới nhưng muốn luôn giữ cố định ô A1. Bạn viết tham chiếu thế nào?',
+ o:['A1','$A$1','A$1$','#A1'],a:1,
+ e:'$A$1 là tham chiếu tuyệt đối, không đổi khi sao chép. Nhấn F4 để thêm dấu $ nhanh.'},
+{d:3,t:'single',q:'Bạn nộp bài cho thầy cô qua mạng và muốn bài hiển thị giống hệt nhau trên mọi máy, khó bị sửa. Nên lưu định dạng nào?',
+ o:['.docx','.txt','.pdf','.html'],a:2,
+ e:'PDF giữ nguyên bố cục, phông chữ và hình ảnh trên mọi thiết bị.'},
+{d:3,t:'single',q:'Bạn muốn biểu diễn tỷ lệ phần trăm các môn thể thao yêu thích của cả lớp. Loại biểu đồ nào phù hợp nhất?',
+ o:['Biểu đồ đường (Line)','Biểu đồ tròn (Pie)','Biểu đồ phân tán (Scatter)','Không cần biểu đồ'],a:1,
+ e:'Biểu đồ tròn cho thấy các phần của một tổng thể 100%. Biểu đồ đường thể hiện sự thay đổi theo thời gian.'},
+{d:3,t:'match',order:true,q:'Sắp xếp các bước làm một video giới thiệu lớp theo đúng thứ tự.',
+ items:['Lên ý tưởng và viết kịch bản','Quay phim, chụp ảnh, thu âm','Biên tập: cắt ghép, thêm chữ, nhạc nền','Xuất video và chia sẻ'],targets:['Bước 1','Bước 2','Bước 3','Bước 4'],a:[0,1,2,3],
+ e:'Kịch bản → quay → biên tập → xuất bản.'},
+{d:3,t:'single',q:'Bạn chèn một bức ảnh lấy trên Internet vào bài thuyết trình. Bạn cần làm gì để đúng quy định bản quyền?',
+ o:['Cắt bớt viền ảnh là thành ảnh của mình','Kiểm tra giấy phép của ảnh và ghi nguồn','Đổi tên tệp ảnh','Làm ảnh nhỏ lại'],a:1,
+ e:'Sửa ảnh không làm mất bản quyền của tác giả. Chọn ảnh có giấy phép phù hợp (Creative Commons, ảnh miễn phí) và ghi nguồn.'},
+{d:3,t:'hotspot',svg:'word',q:'Bạn muốn làm cho tiêu đề bài viết in đậm. Nhấp vào nút phù hợp trên thanh công cụ.',a:0,
+ e:'Nút B (Bold) làm chữ in đậm; I (Italic) in nghiêng; U (Underline) gạch chân. Phím tắt in đậm: Ctrl + B.'},
+{d:3,t:'hotspot',svg:'word',q:'Bạn muốn căn giữa dòng tiêu đề. Nhấp vào nút phù hợp trên thanh công cụ.',a:4,
+ e:'Nút căn giữa (Center) có các dòng dài ngắn xếp đối xứng. Phím tắt: Ctrl + E.'},
+{d:3,t:'single',q:'Trong Excel, bạn muốn xếp bảng điểm từ cao xuống thấp. Bạn dùng lệnh nào?',
+ o:['Sort Largest to Smallest (Sắp xếp từ lớn đến nhỏ)','Sort Smallest to Largest','Merge & Center','Wrap Text'],a:0,
+ e:'Data > Sort hoặc Home > Sort & Filter > Sort Largest to Smallest. Merge & Center gộp ô; Wrap Text xuống dòng trong ô.'},
+{d:3,t:'match',q:'Trong PowerPoint, ghép mỗi thẻ (tab) với việc bạn muốn làm.',
+ items:['Insert','Transitions','Review','Design','View'],
+ targets:['Chèn hình ảnh vào slide','Thêm hiệu ứng chuyển giữa các slide','Kiểm tra chính tả','Đổi giao diện (theme) cho cả bài'],a:[0,1,2,3],
+ e:'Insert: chèn; Transitions: chuyển slide; Review: chính tả, bình luận; Design: chủ đề, kích thước slide. View dùng để đổi chế độ xem.'},
+{d:3,t:'single',q:'Trong Excel, một ô hiển thị ##### thay vì con số. Nguyên nhân thường gặp là gì?',
+ o:['Máy tính bị nhiễm virus','Cột quá hẹp, cần kéo rộng cột','Công thức sai chính tả','Tệp bị hỏng'],a:1,
+ e:'##### xuất hiện khi số không vừa độ rộng cột. Nhấp đúp vào đường biên tiêu đề cột để tự giãn vừa.'},
+
+/* ======================= 5. GIAO TIẾP (13) ======================= */
+{d:4,t:'single',q:'Cô giáo gửi thông báo cho phụ huynh cả lớp và không muốn phụ huynh thấy địa chỉ email của nhau. Cô nên nhập danh sách email vào ô nào?',
+ o:['To (Đến)','Cc','Bcc','Subject (Tiêu đề)'],a:2,
+ e:'Bcc (bản sao ẩn): người nhận không thấy những ai khác cùng nhận thư. Dùng To hoặc Cc sẽ lộ toàn bộ danh sách email.'},
+{d:4,t:'match',q:'Ghép mỗi cách liên lạc với tình huống phù hợp nhất.',
+ items:['Email','Tin nhắn (Chat)','Gọi video','Diễn đàn / Bảng tin lớp','Thư tay qua bưu điện'],
+ targets:['Gửi bài tập kèm tệp cho thầy cô, thầy cô đọc khi rảnh','Hỏi nhanh bạn cùng nhóm một câu ngắn','Họp nhóm online, nhìn thấy nhau và chia sẻ màn hình','Đăng câu hỏi để cả lớp cùng thảo luận và xem lại sau'],a:[0,1,2,3],
+ e:'Chọn đúng kênh giúp trao đổi hiệu quả: chính thức, có tệp → email; nhanh, ngắn → chat; cần thảo luận trực tiếp → gọi video; lưu lại cho nhiều người → diễn đàn.'},
+{d:4,t:'yesno',q:'Với mỗi phát biểu về email, hãy chọn Yes nếu đúng hoặc No nếu sai.',
+ rows:['Tiêu đề (Subject) nên tóm tắt nội dung email.','Nên dùng Reply All cho mọi email.','Email gửi thầy cô nên có lời chào, nội dung rõ ràng và tên người gửi.','Nên trả lời email ngay khi đang tức giận.'],a:[1,0,1,0],
+ e:'Reply All chỉ dùng khi mọi người nhận đều cần biết. Khi đang bực, hãy viết nháp và đọc lại sau.'},
+{d:4,t:'single',q:'Hình thức nào là giao tiếp ĐỒNG BỘ (mọi người tham gia cùng lúc)?',
+ o:['Email','Bài đăng trên diễn đàn','Cuộc gọi video','Bình luận dưới bài viết'],a:2,
+ e:'Đồng bộ: gọi điện, gọi video, lớp học trực tuyến. Không đồng bộ: email, diễn đàn, bình luận, người nhận trả lời vào lúc khác.'},
+{d:4,t:'multi',q:'Bạn cần gửi video bài tập 300 MB, nhưng email chỉ cho đính kèm tối đa 25 MB. Hai cách nào phù hợp?',
+ o:['Tải video lên Google Drive/OneDrive và gửi đường liên kết','Đổi đuôi tệp thành .txt','Dùng dịch vụ gửi tệp lớn hoặc nén, chia nhỏ tệp','Chụp màn hình video để gửi','Bấm Gửi nhiều lần cho đến khi được'],a:[0,2],
+ e:'Tệp lớn nên chia sẻ bằng liên kết đám mây (có thể phân quyền) hoặc dịch vụ gửi tệp lớn.'},
+{d:4,t:'single',q:'Chữ ký email (signature) thường có những thông tin gì?',
+ o:['Họ tên, lớp/trường hoặc chức danh, cách liên hệ','Mật khẩu email','Toàn bộ các email cũ','Nhạc nền và ảnh động'],a:0,
+ e:'Chữ ký email giúp người nhận biết bạn là ai. Không bao giờ ghi mật khẩu vào email.'},
+{d:4,t:'single',q:'Khi viết email cho thầy cô, điều nào nên TRÁNH?',
+ o:['Lời chào phù hợp','Dùng tiếng lóng, viết tắt và nhiều biểu tượng cảm xúc','Viết ngắn gọn, rõ ràng','Kiểm tra chính tả trước khi gửi'],a:1,
+ e:'Email với thầy cô, người lớn cần lịch sự, rõ ràng. Tiếng lóng, viết tắt dễ gây hiểu lầm.'},
+{d:4,t:'single',q:'Thầy chủ nhiệm đi công tác một tuần và muốn ai gửi email cũng nhận được thông báo thầy vắng mặt. Thầy dùng tính năng nào?',
+ o:['Chuyển tiếp (Forward) mọi email','Trả lời tự động (Automatic Replies / Out of Office)','Đánh dấu tất cả là đã đọc','Xóa hộp thư'],a:1,
+ e:'Out of Office tự động trả lời người gửi trong khoảng thời gian được đặt.'},
+{d:4,t:'hotspot',svg:'mail',q:'Bạn muốn gửi kèm tệp bài tập trong email này. Nhấp vào nút phù hợp.',a:4,
+ e:'Biểu tượng kẹp giấy (Attach / Đính kèm) dùng để thêm tệp vào email.'},
+{d:4,t:'hotspot',svg:'mail',q:'Bạn gửi bài cho cô giáo bộ môn và muốn gửi bản sao để cô chủ nhiệm cùng biết. Nhấp vào ô phù hợp để thêm địa chỉ cô chủ nhiệm.',a:2,
+ e:'Cc (bản sao): người nhận ở Cc được biết thông tin, người nhận chính nằm ở To. Mọi người đều thấy địa chỉ trong ô Cc.'},
+{d:4,t:'single',q:'Trong lớp học trực tuyến, khi chưa đến lượt phát biểu, bạn nên làm gì?',
+ o:['Bật micro để mọi người nghe tiếng ồn xung quanh','Tắt micro (Mute) và dùng nút giơ tay khi muốn phát biểu','Rời khỏi lớp','Nói chen vào lúc thầy cô đang giảng'],a:1,
+ e:'Tắt micro giúp lớp không bị ồn. Dùng tính năng Raise hand (giơ tay) hoặc khung chat để xin phát biểu.'},
+{d:4,t:'multi',q:'Hai việc nào là quy tắc lịch sự khi học trực tuyến qua video?',
+ o:['Vào lớp đúng giờ, chuẩn bị chỗ ngồi gọn gàng','Dùng khung chat đúng mục đích, lịch sự','Chia sẻ đường link lớp học lên mạng xã hội','Ăn uống trước camera','Đổi tên hiển thị thành tên vui nhộn'],a:[0,1],
+ e:'Đúng giờ, gọn gàng, chat lịch sự. Không chia sẻ link lớp công khai vì người lạ có thể vào phá.'},
+{d:4,t:'single',q:'Nhóm chat của lớp có 40 bạn. Bạn muốn hỏi riêng một bạn về chuyện cá nhân. Bạn nên làm gì?',
+ o:['Hỏi trong nhóm chat lớp','Nhắn tin riêng (tin nhắn trực tiếp) cho bạn đó','Đăng lên trang cá nhân','Gửi email cho cả lớp'],a:1,
+ e:'Chuyện riêng nên nhắn riêng. Nhóm chung dành cho thông tin cả lớp cần biết.'},
+
+/* ======================= 6. CỘNG TÁC (13) ======================= */
+{d:5,t:'multi',q:'Nhóm bạn cùng làm bài báo cáo trên Google Docs hoặc Word Online. Ba lợi ích của việc cùng soạn thảo trực tuyến là gì?',
+ o:['Nhiều bạn cùng sửa một tệp cùng lúc','Không cần Internet','Xem và khôi phục bản cũ nhờ lịch sử phiên bản','Viết bình luận, gắn tên @bạn để giao việc','Mỗi người làm một bản rồi tự ghép lại'],a:[0,2,3],
+ e:'Cùng soạn thảo trực tuyến giúp không phải gửi qua lại nhiều bản. Cần Internet để đồng bộ.'},
+{d:5,t:'single',q:'Bạn chia sẻ tài liệu và chỉ muốn bạn bè góp ý bằng bình luận, không sửa nội dung. Bạn chọn quyền nào?',
+ o:['Người xem (Viewer)','Người nhận xét (Commenter)','Người chỉnh sửa (Editor)','Chủ sở hữu (Owner)'],a:1,
+ e:'Commenter được bình luận, góp ý nhưng không sửa trực tiếp.'},
+{d:5,t:'yesno',q:'Với mỗi phát biểu về lịch sử phiên bản (version history), hãy chọn Yes nếu đúng hoặc No nếu sai.',
+ rows:['Lịch sử phiên bản cho biết ai đã sửa và sửa lúc nào.','Khôi phục một bản cũ sẽ xóa vĩnh viễn mọi bản mới hơn.','Có thể đặt tên cho một phiên bản quan trọng.','Lịch sử phiên bản chỉ có khi lưu tệp trên USB.'],a:[1,0,1,0],
+ e:'Khôi phục bản cũ thường tạo ra một bản mới, các bản khác vẫn còn. Lịch sử phiên bản là tính năng của Google Drive, OneDrive.'},
+{d:5,t:'single',q:'Nhóm bạn cần hẹn giờ học nhóm online tuần này. Cách nào tiện nhất?',
+ o:['Mỗi người tự nhớ giờ','Tạo sự kiện trên lịch chung (Google Calendar / Outlook) và gửi lời mời kèm link họp cho cả nhóm','Hẹn miệng ở trường','Đăng giờ học lên mạng xã hội công khai'],a:1,
+ e:'Lời mời trên lịch tự nhắc mọi người, có link họp và cho biết ai đồng ý tham gia.'},
+{d:5,t:'match',q:'Ghép mỗi quyền chia sẻ với việc người đó được làm.',
+ items:['Chủ sở hữu (Owner)','Người chỉnh sửa (Editor)','Người nhận xét (Commenter)','Người xem (Viewer)'],
+ targets:['Toàn quyền, kể cả xóa tệp','Sửa nội dung','Chỉ thêm bình luận, góp ý','Chỉ đọc'],a:[0,1,2,3],
+ e:'Chỉ cấp quyền vừa đủ cho việc cần làm.'},
+{d:5,t:'single',q:'Bạn chia sẻ thư mục ảnh của lớp có ảnh các bạn. Cách chia sẻ nào an toàn nhất?',
+ o:['Ai có link cũng được chỉnh sửa','Đăng công khai lên mạng','Chỉ chia sẻ cho email của các bạn trong lớp, quyền Xem','Gửi mật khẩu tài khoản của bạn cho cả lớp'],a:2,
+ e:'Chia sẻ cho đúng người, quyền thấp nhất cần thiết. Link "ai cũng xem được" có thể bị chuyển ra ngoài.'},
+{d:5,t:'single',q:'Nhóm bạn cần theo dõi: ai làm phần nào, hạn nộp, đã xong chưa. Công cụ nào phù hợp?',
+ o:['Ứng dụng quản lý công việc như Microsoft Planner, Trello','Máy tính bỏ túi','Trình phát nhạc','Ứng dụng chỉnh ảnh'],a:0,
+ e:'Planner/Trello có các thẻ công việc với người phụ trách, hạn chót và trạng thái (Cần làm – Đang làm – Đã xong).'},
+{d:5,t:'single',q:'Trong Google Docs, bạn muốn nhắc bạn Lan sửa một đoạn văn. Cách nhanh nhất là gì?',
+ o:['Viết chữ in hoa vào giữa bài','Thêm bình luận và gõ @Lan để Lan nhận thông báo','Xóa đoạn văn đó','Gọi điện cho cả nhóm'],a:1,
+ e:'Gắn tên @ trong bình luận sẽ gửi thông báo cho người đó và có thể giao việc (Assign).'},
+{d:5,t:'single',q:'Một bạn trong nhóm lỡ xóa mất phần bài của bạn khác trên tài liệu chung. Làm sao lấy lại?',
+ o:['Viết lại từ đầu','Mở Lịch sử phiên bản và khôi phục bản trước khi bị xóa','Tạo tài liệu mới','Không thể lấy lại'],a:1,
+ e:'Google Docs: File > Version history. Word Online: File > Info > Version History.'},
+{d:5,t:'yesno',q:'Với mỗi phát biểu về làm việc nhóm online, hãy chọn Yes nếu đúng hoặc No nếu sai.',
+ rows:['Nên chia việc rõ ràng cho từng thành viên.','Nên đặt hạn chót cho từng phần việc.','Một bạn nên làm hết để nhanh hơn.','Nên tôn trọng ý kiến của các bạn khi góp ý.'],a:[1,1,0,1],
+ e:'Làm việc nhóm hiệu quả: phân công rõ, có hạn chót, góp ý tôn trọng, mọi người cùng tham gia.'},
+{d:5,t:'match',order:true,q:'Sắp xếp các bước làm một dự án nhóm trực tuyến theo đúng thứ tự.',
+ items:['Thống nhất mục tiêu và phân công','Mỗi bạn làm phần của mình trên tài liệu chung','Góp ý bằng bình luận và chỉnh sửa','Kiểm tra lần cuối và nộp bài'],targets:['Bước 1','Bước 2','Bước 3','Bước 4'],a:[0,1,2,3],
+ e:'Lập kế hoạch → thực hiện → góp ý, chỉnh sửa → hoàn thiện và nộp.'},
+{d:5,t:'single',q:'Trong buổi họp nhóm trên Teams hoặc Google Meet, bạn muốn cả nhóm cùng xem slide trên máy của bạn. Bạn dùng tính năng nào?',
+ o:['Tắt camera','Chia sẻ màn hình (Share screen / Present)','Rời cuộc họp','Đổi hình nền'],a:1,
+ e:'Chia sẻ màn hình giúp mọi người thấy đúng nội dung bạn đang trình bày.'},
+{d:5,t:'hotspot',svg:'word',q:'Bạn muốn mời bạn cùng nhóm vào chỉnh sửa tài liệu này. Nhấp vào nút phù hợp.',a:9,
+ e:'Nút Chia sẻ (Share) ở góc phải cho phép nhập email người nhận và chọn quyền: chỉnh sửa, nhận xét hoặc chỉ xem.'},
+
+/* ======================= 7. AN TOÀN & BẢO MẬT (16) ======================= */
+{d:6,t:'multi',q:'Bạn vừa đăng ký một tài khoản Google. Tài khoản mới của bạn dùng Đăng nhập một lần (SSO).\nBa lợi ích của Đăng nhập một lần (SSO) là gì?',
+ o:['Bạn chỉ cần nhớ một bộ thông tin đăng nhập','SSO thuộc sở hữu và do chính phủ điều hành','Đăng nhập một lần là dùng được email, lưu trữ tài liệu, ứng dụng và trang web liên kết','Tài khoản SSO không bao giờ bị tấn công','Ít mật khẩu hơn nên dễ bảo vệ tài khoản chính bằng mật khẩu mạnh và xác thực 2 bước'],a:[0,2,4],
+ e:'SSO tiện lợi, nhưng nếu lộ tài khoản chính thì mọi dịch vụ liên kết đều bị ảnh hưởng, nên phải bật xác thực 2 bước.'},
+{d:6,t:'single',q:'Mật khẩu nào mạnh nhất?',
+ o:['12345678','matkhau','Nam2015','Ca!Heo-Xanh_Bay#27'],a:3,
+ e:'Mật khẩu mạnh: dài từ 12 ký tự, có chữ hoa, chữ thường, số và ký hiệu, không chứa tên hoặc ngày sinh.'},
+{d:6,t:'match',q:'Ghép mỗi mối nguy trên mạng với mô tả phù hợp.',
+ items:['Lừa đảo (Phishing)','Mã độc tống tiền (Ransomware)','Trojan','Phần mềm gián điệp (Spyware)','Tường lửa (Firewall)'],
+ targets:['Tin nhắn giả mạo dụ bạn nhập mật khẩu','Khóa toàn bộ tệp và đòi tiền chuộc','Trò chơi "miễn phí" nhưng giấu mã độc bên trong','Lén theo dõi những gì bạn làm trên máy'],a:[0,1,2,3],
+ e:'Tường lửa là công cụ bảo vệ, không phải mối nguy.'},
+{d:6,t:'single',q:'Ví dụ nào là xác thực hai yếu tố (2FA)?',
+ o:['Nhập mật khẩu hai lần','Nhập mật khẩu, sau đó nhập mã gửi về điện thoại','Trả lời hai câu hỏi bí mật','Có hai mật khẩu cho hai tài khoản'],a:1,
+ e:'2FA kết hợp hai loại khác nhau: thứ bạn biết (mật khẩu) + thứ bạn có (điện thoại) hoặc thứ thuộc về bạn (vân tay).'},
+{d:6,t:'yesno',q:'Với mỗi phát biểu về Wi-Fi công cộng (quán cà phê, trung tâm thương mại), hãy chọn Yes nếu đúng hoặc No nếu sai.',
+ rows:['Không nên đăng nhập tài khoản quan trọng khi dùng Wi-Fi công cộng không mật khẩu.','VPN giúp mã hóa kết nối khi dùng Wi-Fi công cộng.','Wi-Fi có tên giống tên quán chắc chắn là của quán.','Nên tắt tự động kết nối với Wi-Fi lạ.'],a:[1,1,0,1],
+ e:'Kẻ xấu có thể phát Wi-Fi giả trùng tên. Hãy hỏi nhân viên đúng tên mạng.'},
+{d:6,t:'hotspot',svg:'browser',q:'Bạn muốn kiểm tra trang web có kết nối bảo mật hay không. Nhấp vào vị trí phù hợp trên trình duyệt.',a:3,
+ e:'Biểu tượng ổ khóa ở đầu thanh địa chỉ cho biết kết nối có được mã hóa không và hiển thị thông tin chứng chỉ của trang.'},
+{d:6,t:'single',q:'Dấu hiệu nào cho thấy email có thể là lừa đảo?',
+ o:['Email của thầy cô gửi đúng lịch học đã báo','Địa chỉ người gửi lạ, viết sai tên, giục bạn "đăng nhập trong 24 giờ kẻo mất tài khoản" qua đường link','Email có chữ ký và số điện thoại trường','Thông báo lịch họp từ lịch của lớp'],a:1,
+ e:'Lừa đảo thường: người gửi lạ hoặc giả tên, tạo cảm giác gấp gáp, đòi mật khẩu/mã OTP, có đường link lạ.'},
+{d:6,t:'single',q:'Quy tắc sao lưu 3-2-1 nghĩa là gì?',
+ o:['3 mật khẩu, 2 tài khoản, 1 máy','3 bản sao dữ liệu, trên 2 loại thiết bị lưu trữ, 1 bản để ở nơi khác (như đám mây)','Sao lưu 3 lần mỗi ngày','3 ổ cứng trong 1 máy'],a:1,
+ e:'Quy tắc 3-2-1 giúp không mất dữ liệu khi hỏng máy, mất máy hay bị mã độc.'},
+{d:6,t:'multi',q:'Hai cách nào giúp bảo vệ dữ liệu nếu bạn làm mất điện thoại?',
+ o:['Đặt khóa màn hình bằng mã PIN, vân tay hoặc khuôn mặt','Bật tính năng Tìm thiết bị (Find My Device / Find My iPhone)','Ghi mật khẩu dán sau ốp lưng','Tắt mọi bản cập nhật','Để điện thoại không khóa cho tiện'],a:[0,1],
+ e:'Khóa màn hình chặn người lạ; Tìm thiết bị giúp định vị, khóa và xóa dữ liệu từ xa.'},
+{d:6,t:'single',q:'Chữ "S" trong HTTPS nghĩa là gì?',
+ o:['Speed: nhanh hơn','Secure: dữ liệu được mã hóa khi truyền đi','Server: máy chủ riêng','Search: đã được Google kiểm tra'],a:1,
+ e:'HTTPS mã hóa đường truyền, nhưng không đảm bảo trang đó đáng tin. Trang lừa đảo cũng có thể dùng HTTPS.'},
+{d:6,t:'yesno',q:'Với mỗi phát biểu về quyền của ứng dụng, hãy chọn Yes nếu đúng hoặc No nếu sai.',
+ rows:['Ứng dụng đèn pin đòi xem danh bạ là đáng ngờ.','Nên xem lại các quyền khi cài ứng dụng mới.','Có phần mềm diệt virus là an toàn tuyệt đối, không cần cập nhật.','Nên tải ứng dụng từ Google Play hoặc App Store.'],a:[1,1,0,1],
+ e:'Chỉ cấp quyền mà ứng dụng thật sự cần. Phần mềm diệt virus phải được cập nhật thường xuyên.'},
+{d:6,t:'single',q:'Bạn nhận tin nhắn: "Chúc mừng bạn trúng thưởng điện thoại! Bấm link và nhập số thẻ ngân hàng của bố mẹ để nhận quà". Bạn nên làm gì?',
+ o:['Nhập ngay kẻo hết hạn','Gửi cho bạn bè cùng nhận','Không bấm link, báo bố mẹ và xóa tin nhắn','Nhắn lại hỏi thêm'],a:2,
+ e:'Đây là lừa đảo. Không bấm link, không cung cấp thông tin thẻ hay mã OTP; báo người lớn.'},
+{d:6,t:'single',q:'Một người lạ quen trên game online xin địa chỉ nhà và ảnh của bạn. Bạn nên làm gì?',
+ o:['Gửi vì đã chơi game cùng nhau lâu','Không cung cấp, chặn người đó và kể với bố mẹ hoặc thầy cô','Gửi ảnh nhưng không gửi địa chỉ','Hẹn gặp ngoài đời để làm quen'],a:1,
+ e:'Không chia sẻ thông tin cá nhân với người quen qua mạng. Luôn kể với người lớn tin cậy khi có ai đó khiến bạn thấy lo lắng.'},
+{d:6,t:'multi',q:'Ba thông tin nào KHÔNG nên đăng công khai trên mạng?',
+ o:['Địa chỉ nhà','Mật khẩu','Số điện thoại','Món ăn yêu thích','Môn thể thao bạn thích'],a:[0,1,2],
+ e:'Địa chỉ, số điện thoại, mật khẩu, tên trường, lịch đi lại là thông tin cá nhân nhạy cảm, kẻ xấu có thể lợi dụng.'},
+{d:6,t:'single',q:'Tư thế nào đúng khi ngồi dùng máy tính lâu?',
+ o:['Màn hình cách mắt khoảng 50–70 cm, mép trên màn hình ngang tầm mắt, lưng thẳng','Cúi sát màn hình','Nằm trên giường dùng laptop','Đặt màn hình thật cao, phải ngửa cổ'],a:0,
+ e:'Ngồi đúng tư thế giúp tránh đau cổ, mỏi mắt. Chân đặt phẳng trên sàn, khuỷu tay vuông góc khi gõ phím.'},
+{d:6,t:'single',q:'Phần mềm diệt virus báo tệp bạn vừa tải về có mã độc. Bạn nên làm gì?',
+ o:['Vẫn mở tệp xem thử','Không mở, để phần mềm cách ly (Quarantine) hoặc xóa tệp','Gửi tệp cho bạn bè kiểm tra','Tắt phần mềm diệt virus'],a:1,
+ e:'Cách ly giữ tệp ở nơi an toàn, không chạy được. Không tắt phần mềm bảo vệ để mở tệp đáng ngờ.'}
+];
+BANK.forEach((q,i)=>{q.id=52001+i});
+const QM={};BANK.forEach(q=>QM[q.id]=q);
+
+/* ===================== HÌNH MINH HỌA (SVG) ===================== */
+const hit=(x,y,w,h)=>`<rect class="hit" x="${x}" y="${y}" width="${w}" height="${h}" rx="6"/>`;
+const hs=(r,label,inner)=>`<g class="hs" data-r="${r}" tabindex="0" role="button" aria-label="${label}">${inner}</g>`;
+const SVG={
+ ports(){
+  let pins='';[72,80,88].forEach((y,ri)=>{for(let k=0;k<5-(ri===2?0:0);k++)pins+=`<circle class="hw-metal" cx="${86+k*12-(ri*2)}" cy="${y}" r="2.6"/>`});
+  let rj='';for(let k=0;k<8;k++)rj+=`<rect class="hw-gold" x="${205+k*8.5}" y="56" width="5" height="12"/>`;
+  return `<svg viewBox="0 0 680 186" role="img" aria-label="Cạnh máy tính xách tay với 5 cổng A đến E">
+  <rect class="hw-body" x="10" y="30" width="660" height="104" rx="16"/>
+  <rect class="hw-plain" x="12" y="118" width="656" height="14" rx="6"/>
+  <line x1="18" y1="118" x2="662" y2="118" stroke="var(--hw-edge)" stroke-width="1.5"/>
+  <path class="hw-metal" d="M62 56 H158 L147 104 H73 Z"/><path class="hw-port" d="M70 62 H150 L141 98 H79 Z"/>${pins}
+  <rect class="hw-port" x="196" y="50" width="84" height="60" rx="3"/><rect class="hw-plain" x="222" y="102" width="32" height="10"/>${rj}
+  <path class="hw-metal" d="M318 62 H422 V82 L410 94 H330 L318 82 Z"/><path class="hw-port" d="M324 67 H416 V80 L406 89 H334 L324 80 Z"/><rect class="hw-gold" x="340" y="72" width="60" height="5"/>
+  <rect class="hw-metal" x="458" y="60" width="96" height="38" rx="2"/><rect class="hw-port" x="463" y="65" width="86" height="28"/><rect class="hw-blue" x="467" y="69" width="78" height="11"/>
+  <circle class="hw-metal" cx="612" cy="79" r="19"/><circle class="hw-port" cx="612" cy="79" r="9"/>
+  <text class="hw-label" x="110" y="170">A</text><text class="hw-label" x="238" y="170">B</text><text class="hw-label" x="370" y="170">C</text><text class="hw-label" x="506" y="170">D</text><text class="hw-label" x="612" y="170">E</text>
+  </svg>`;
+ },
+ taskbar(){
+  return `<svg viewBox="0 0 680 64" role="img" aria-label="Thanh tác vụ Windows">
+  <rect class="hw-plain" x="0" y="0" width="680" height="64"/>
+  ${hs(0,'Nút Start',hit(6,8,44,48)+'<rect class="hw-blue" x="17" y="21" width="10" height="10"/><rect class="hw-blue" x="29" y="21" width="10" height="10"/><rect class="hw-blue" x="17" y="33" width="10" height="10"/><rect class="hw-blue" x="29" y="33" width="10" height="10"/>')}
+  ${hs(1,'Ô tìm kiếm',hit(54,8,182,48)+'<rect class="hw-field" x="60" y="18" width="170" height="28" rx="14" stroke="var(--hw-edge)"/><circle class="hw-ico" cx="78" cy="31" r="6"/><path class="hw-ico" d="M82.5 35.5 L87 40"/><text class="hw-text" x="94" y="36">Tìm kiếm</text>')}
+  ${hs(2,'File Explorer',hit(244,8,44,48)+'<path class="hw-gold" d="M252 22 h10 l4 4 h16 v18 h-30 z"/><rect class="hw-plain" x="254" y="30" width="26" height="1.5"/>')}
+  ${hs(3,'Trình duyệt',hit(292,8,44,48)+'<circle class="hw-ico" cx="314" cy="32" r="12"/><circle class="hw-ico" cx="314" cy="32" r="5"/><path class="hw-ico" d="M314 20 v7 M303.6 38 l6 -3.5 M324.4 38 l-6 -3.5"/>')}
+  ${hs(4,'Thư điện tử',hit(340,8,44,48)+'<rect class="hw-ico" x="349" y="23" width="26" height="18" rx="2"/><path class="hw-ico" d="M349 25 l13 9 l13 -9"/>')}
+  ${hs(5,'Mạng Wi-Fi',hit(478,8,40,48)+'<circle class="hw-fill" cx="498" cy="40" r="2.6"/><path class="hw-ico" d="M491 34 Q498 28 505 34 M486 29 Q498 19 510 29 M481 24 Q498 10 515 24"/>')}
+  ${hs(6,'Âm lượng',hit(520,8,36,48)+'<path class="hw-ico" d="M528 28 h5 l8 -7 v22 l-8 -7 h-5 z M546 27 q5 5 0 10"/>')}
+  ${hs(7,'Pin',hit(558,8,38,48)+'<rect class="hw-ico" x="564" y="26" width="22" height="12" rx="2"/><rect class="hw-fill" x="567" y="29" width="13" height="6"/><rect class="hw-fill" x="587" y="30" width="3" height="4"/>')}
+  ${hs(8,'Đồng hồ và lịch',hit(600,8,76,48)+'<text class="hw-text" x="638" y="29" text-anchor="middle">09:41</text><text class="hw-text" x="638" y="47" text-anchor="middle" font-size="11">10/10/2026</text>')}
+  </svg>`;
+ },
+ mail(){
+  const row=(r,label,y,content)=>hs(r,label,hit(10,y,84,34)+`<rect class="hw-ibtn" x="14" y="${y+3}" width="76" height="28" rx="3"/><text class="hw-text" x="52" y="${y+22}" text-anchor="middle">${label.split(' ')[0]}</text>`)+`<rect class="hw-field" x="100" y="${y+1}" width="566" height="32" rx="3" stroke="var(--hw-edge)"/><text class="hw-text" x="112" y="${y+22}">${content}</text>`;
+  return `<svg viewBox="0 0 680 290" role="img" aria-label="Cửa sổ soạn thư điện tử">
+  <rect class="hw-plain" x="0" y="0" width="680" height="290"/>
+  <rect class="hw-field" x="0" y="0" width="680" height="48"/>
+  ${hs(0,'Gửi',hit(8,5,96,38)+'<rect class="hw-blue" x="14" y="10" width="84" height="28" rx="4"/><text class="hw-btn-text" x="56" y="29">Gửi</text>')}
+  ${hs(4,'Đính kèm tệp',hit(112,5,118,38)+'<path class="hw-ico" d="M136 31 l9 -9 a4 4 0 0 1 6 6 l-11 11 a2.5 2.5 0 0 1 -3.5 -3.5 l9 -9"/><text class="hw-text" x="158" y="29">Đính kèm</text>')}
+  <text class="hw-text" x="250" y="29" opacity=".55">Định dạng   ·   Chèn   ·   Tùy chọn</text>
+  ${row(1,'Đến (To)',56,'co.huong@truong.edu.vn')}
+  ${row(2,'Cc',96,'')}
+  ${row(3,'Bcc',136,'')}
+  ${hs(5,'Tiêu đề',hit(10,176,656,34)+'<text class="hw-text" x="52" y="198" text-anchor="middle">Tiêu đề</text><rect class="hw-field" x="100" y="177" width="566" height="32" rx="3" stroke="var(--hw-edge)"/><text class="hw-text" x="112" y="198">Bài tập Khoa học – Nhóm 3</text>')}
+  <rect class="hw-field" x="14" y="220" width="652" height="60" rx="3" stroke="var(--hw-edge)"/>
+  <text class="hw-text" x="26" y="244">Em chào cô ạ,</text><text class="hw-text" x="26" y="264">Em gửi cô bài tập Khoa học của nhóm 3. Em cảm ơn cô.</text>
+  </svg>`;
+ },
+ word(){
+  return `<svg viewBox="0 0 680 156" role="img" aria-label="Thanh công cụ trình soạn thảo văn bản">
+  <rect class="hw-plain" x="0" y="0" width="680" height="156"/>
+  <text class="hw-text" x="16" y="21">Tệp</text><text class="hw-text" x="60" y="21" font-weight="700">Trang đầu</text><text class="hw-text" x="140" y="21">Chèn</text><text class="hw-text" x="190" y="21">Thiết kế</text><text class="hw-text" x="258" y="21">Bố cục</text><text class="hw-text" x="316" y="21">Xem lại</text>
+  <rect class="hw-blue" x="60" y="26" width="66" height="3"/>
+  <rect class="hw-field" x="0" y="32" width="680" height="52"/>
+  ${hs(0,'In đậm (Bold)',hit(10,38,34,40)+'<text class="hw-big" x="27" y="65" font-weight="800">B</text>')}
+  ${hs(1,'In nghiêng (Italic)',hit(46,38,34,40)+'<text class="hw-big" x="63" y="65" font-style="italic" font-family="Georgia,serif">I</text>')}
+  ${hs(2,'Gạch chân (Underline)',hit(82,38,34,40)+'<text class="hw-big" x="99" y="63">U</text><rect class="hw-fill" x="91" y="67" width="16" height="2"/>')}
+  <rect class="hw-fill" x="124" y="42" width="1" height="32" opacity=".3"/>
+  ${hs(3,'Căn trái',hit(130,38,34,40)+'<path class="hw-ico" d="M137 48 h20 M137 54 h13 M137 60 h20 M137 66 h11"/>')}
+  ${hs(4,'Căn giữa',hit(166,38,34,40)+'<path class="hw-ico" d="M173 48 h20 M176.5 54 h13 M173 60 h20 M177.5 66 h11"/>')}
+  ${hs(5,'Căn phải',hit(202,38,34,40)+'<path class="hw-ico" d="M209 48 h20 M216 54 h13 M209 60 h20 M218 66 h11"/>')}
+  ${hs(6,'Danh sách dấu đầu dòng',hit(244,38,36,40)+'<circle class="hw-fill" cx="252" cy="49" r="2"/><circle class="hw-fill" cx="252" cy="57" r="2"/><circle class="hw-fill" cx="252" cy="65" r="2"/><path class="hw-ico" d="M258 49 h15 M258 57 h15 M258 65 h15"/>')}
+  ${hs(7,'Chèn ảnh',hit(288,38,38,40)+'<rect class="hw-ico" x="294" y="45" width="26" height="22" rx="2"/><path class="hw-ico" d="M297 63 l7 -8 l5 5 l4 -4 l5 7"/><circle class="hw-fill" cx="313" cy="51" r="2"/>')}
+  ${hs(8,'Bình luận',hit(520,38,46,40)+'<rect class="hw-ico" x="530" y="46" width="26" height="18" rx="3"/><path class="hw-ico" d="M536 64 l-2 6 l7 -6"/>')}
+  ${hs(9,'Chia sẻ',hit(572,38,100,40)+'<rect class="hw-blue" x="578" y="44" width="88" height="28" rx="4"/><text class="hw-btn-text" x="622" y="63">Chia sẻ</text>')}
+  <rect class="hw-field" x="120" y="94" width="440" height="62" stroke="var(--hw-edge)"/>
+  <text class="hw-text" x="140" y="122" font-size="16" font-weight="600">Hệ Mặt Trời của chúng ta</text>
+  <rect class="hw-plain" x="140" y="134" width="390" height="5"/><rect class="hw-plain" x="140" y="145" width="320" height="5"/>
+  </svg>`;
+ },
+ browser(){
+  return `<svg viewBox="0 0 680 100" role="img" aria-label="Cửa sổ trình duyệt web">
+  <rect class="hw-plain" x="0" y="0" width="680" height="100"/>
+  <path class="hw-field" d="M14 40 V14 a6 6 0 0 1 6 -6 H206 a6 6 0 0 1 6 6 V40 Z"/>
+  <text class="hw-text" x="28" y="29">Khóa học IC3 Spark</text><text class="hw-text" x="190" y="29">×</text>
+  <rect class="hw-field" x="0" y="40" width="680" height="60"/>
+  ${hs(0,'Quay lại',hit(6,52,30,36)+'<path class="hw-ico" d="M29 70 H14 M20 64 L14 70 L20 76"/>')}
+  ${hs(1,'Tiến tới',hit(38,52,30,36)+'<path class="hw-ico" d="M45 70 H60 M54 64 L60 70 L54 76"/>')}
+  ${hs(2,'Tải lại trang',hit(70,52,32,36)+'<path class="hw-ico" d="M93 66 A8 8 0 1 0 94 73 M94 59 V66 H87"/>')}
+  <rect class="hw-plain" x="108" y="52" width="472" height="36" rx="18"/>
+  ${hs(3,'Thông tin bảo mật trang (ổ khóa)',hit(114,54,34,32)+'<rect class="hw-fill" x="124" y="69" width="14" height="11" rx="2"/><path class="hw-ico" d="M127 69 v-4 a4 4 0 0 1 8 0 v4"/>')}
+  <text class="hw-text" x="154" y="75">https://hoctap.edu.vn/ic3-gs6/level-2</text>
+  ${hs(4,'Thêm dấu trang',hit(546,54,32,32)+'<polygon class="hw-ico" points="562,61 564.2,66.9 570.6,67.2 565.6,71.2 567.3,77.3 562,73.8 556.7,77.3 558.4,71.2 553.4,67.2 559.8,66.9"/>')}
+  <circle class="hw-blue" cx="608" cy="70" r="12"/>
+  ${hs(5,'Menu trình duyệt',hit(636,52,36,36)+'<circle class="hw-fill" cx="654" cy="61" r="2.4"/><circle class="hw-fill" cx="654" cy="70" r="2.4"/><circle class="hw-fill" cx="654" cy="79" r="2.4"/>')}
+  </svg>`;
+ }
+};
+
+/* ===================== TIỆN ÍCH ===================== */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const fmt=sec=>{sec=Math.max(0,sec|0);const h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),s=sec%60;return (h?h+':'+String(m).padStart(2,'0'):String(m).padStart(2,'0'))+':'+String(s).padStart(2,'0')};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+const K={sess:'ic3spark.l2.session',hist:'ic3spark.l2.history',wrong:'ic3spark.l2.wrong',font:'ic3spark.l2.font',name:'ic3spark.l2.name'};
+const TEST_N=45, TEST_MIN=50, PASS=700, SCALES=[1,1.15,1.3];
+const MOVE='<svg class="ico mv" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M12 3 9.5 5.5M12 3l2.5 2.5M12 21l-2.5-2.5M12 21l2.5-2.5M3 12l2.5-2.5M3 12l2.5 2.5M21 12l-2.5-2.5M21 12l-2.5 2.5"/></svg>';
+
+let S=null, timerId=null, selItem=null, fontIdx=store.get(K.font,0)||0;
+
+function blank(q){return q.t==='multi'?[]:q.t==='yesno'?q.rows.map(()=>null):q.t==='match'?q.targets.map(()=>null):null}
+function answered(q,a){if(a==null)return false;if(q.t==='multi')return a.length>0;if(q.t==='yesno'||q.t==='match')return a.some(v=>v!=null);return true}
+function isCorrect(q,a){
+ if(a==null)return false;
+ if(q.t==='single'||q.t==='hotspot')return a===q.a;
+ if(q.t==='multi')return a.length===q.a.length&&q.a.every(v=>a.includes(v));
+ return q.a.every((v,k)=>a[k]===v);
+}
+function instr(q){
+ return {single:'Chọn một đáp án.',multi:`Chọn ${q.a.length} đáp án.`,yesno:'Với mỗi phát biểu, chọn Yes nếu đúng hoặc No nếu sai.',
+  hotspot:'Nhấp vào vị trí đúng trên hình.',
+  match:q.order?'Kéo các mục ở cột trái thả vào ô trống theo đúng thứ tự. Trên điện thoại: chạm vào mục, rồi chạm vào ô.':'Kéo từng mục ở cột trái thả vào ô trống cạnh mô tả phù hợp. Có thể có mục không dùng đến. Trên điện thoại: chạm vào mục, rồi chạm vào ô.'}[q.t];
+}
+const curId=()=>S.ids[S.cur];
+const locked=()=>S.done||(S.mode==='train'&&!!S.chk[curId()]);
+function save(){if(S&&!S.done)store.set(K.sess,S)}
+function show(v){['home','exam','result'].forEach(x=>{$('#'+x).hidden=x!==v});window.scrollTo(0,0)}
+let toastT;function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,3200)}
+let noteT;function note(msg){const n=$('#note');n.textContent=msg;n.hidden=false;clearTimeout(noteT);noteT=setTimeout(()=>n.hidden=true,3500)}
+function armConfirm(btn,fn){if(btn.dataset.armed){fn();return}const old=btn.textContent;btn.dataset.armed='1';btn.textContent='Bấm lần nữa để xác nhận';setTimeout(()=>{if(btn.isConnected){delete btn.dataset.armed;btn.textContent=old}},3500)}
+function applyFont(){$('#exam').style.setProperty('--qs',SCALES[fontIdx]);$('#bFont').classList.toggle('on',fontIdx>0)}
+
+/* ===================== PHIÊN LÀM BÀI ===================== */
+function pickTest(n){
+ const pools=DOMAINS.map((_,d)=>shuffle(BANK.filter(q=>q.d===d).map(q=>q.id)));
+ const out=[];let d=0;
+ while(out.length<n&&pools.some(p=>p.length)){if(pools[d].length)out.push(pools[d].pop());d=(d+1)%pools.length}
+ return shuffle(out);
+}
+function newSession(mode,ids,title){
+ if(!ids.length){toast('Không có câu hỏi phù hợp với lựa chọn của bạn.');return}
+ const orders={},ans={};
+ ids.forEach(id=>{const q=QM[id];ans[id]=blank(q);if(q.t==='match')orders[id]=shuffle(q.items.map((_,i)=>i))});
+ S={mode,title,name:store.get(K.name,''),ids,cur:0,ans,orders,mark:{},skip:{},chk:{},elapsed:0,limit:mode==='test'?TEST_MIN*60:null,done:false,created:Date.now()};
+ selItem=null;save();openExam();
+}
+function openExam(){show('exam');applyFont();if(!S.done)startTimer();else tick();renderQ()}
+function startTimer(){
+ stopTimer();tick();
+ timerId=setInterval(()=>{
+  S.elapsed++;tick();if(S.elapsed%5===0)save();
+  if(S.limit&&S.elapsed>=S.limit){closeModal();finish();toast('Hết giờ. Bài làm đã được nộp tự động.')}
+ },1000);
+}
+function stopTimer(){if(timerId){clearInterval(timerId);timerId=null}}
+function tick(){
+ const t=$('#timer');$('#candName').textContent=S.name?'Thí sinh: '+S.name:'';
+ $('#modeLabel').textContent=S.done?'Xem lại bài làm':(S.mode==='test'?'Thi thử · Testing mode':'Luyện tập · Training mode')+(S.title?' · '+S.title:'');
+ if(S.done){t.textContent='Đúng '+S.grade.c+'/'+S.grade.n;t.classList.remove('low');return}
+ if(S.limit){const r=S.limit-S.elapsed;t.textContent='Còn lại '+fmt(r);t.classList.toggle('low',r<=300)}
+ else{t.textContent='Thời gian '+fmt(S.elapsed);t.classList.remove('low')}
+}
+
+/* ===================== HIỂN THỊ CÂU HỎI ===================== */
+function renderQ(){
+ const id=curId(),q=QM[id],a=S.ans[id],tr=S.mode==='train',rev=S.done;
+ const sol=rev||(tr&&!!S.chk[id]);
+ $('#exam').classList.toggle('review',rev);
+ $('#qpos').textContent=(S.cur+1)+'/'+S.ids.length;
+ $('#qid').textContent='(ID: '+id+')';
+ $('#qdomain').textContent=DOMAINS[q.d];
+ $('#qtext').innerHTML=esc(q.q).replace(/\n/g,'<br>');
+ $('#qimg').innerHTML=q.img?`<div class="figure">${SVG[q.img]()}</div>`:'';
+ $('#qinstr').textContent=instr(q);
+ $('#markChk').checked=!!S.mark[id];
+ const A=$('#answers');A.classList.toggle('locked',sol);A.innerHTML=body(q,a,sol,id);
+ if(q.t==='hotspot'){A.querySelectorAll('.hs').forEach(g=>{const r=+g.dataset.r;if(a===r)g.classList.add('picked');if(sol){if(r===q.a)g.classList.add('right');else if(a===r)g.classList.add('wrongpick')}if(sol)g.setAttribute('tabindex','-1')})}
+ $('#fb').innerHTML=feedback(q,a,sol,tr,rev,id);
+ $('#note').hidden=true;
+ $('#bPrev').disabled=S.cur===0;
+ $('#bNext').disabled=rev&&S.cur===S.ids.length-1;
+ $('#bHint').disabled=!tr||sol;
+ $('#bReset').disabled=false;
+ renderSegs();renderStat();save();
+ $('#stage').scrollTop=0;
+}
+function body(q,a,sol,id){
+ if(q.t==='single'||q.t==='multi'){
+  const multi=q.t==='multi';
+  return `<div class="opts${multi?' multi':''}" role="${multi?'group':'radiogroup'}">`+q.o.map((o,i)=>{
+   const picked=multi?a.includes(i):a===i, right=multi?q.a.includes(i):q.a===i;
+   let c='opt';if(picked)c+=' picked';let tag='';
+   if(sol){if(right){c+=' right'+(picked?'':' missed');tag='<span class="tag">Đáp án đúng</span>'}else if(picked){c+=' wrong';tag='<span class="tag bad">Bạn chọn</span>'}}
+   return `<button type="button" class="${c}" data-i="${i}" role="${multi?'checkbox':'radio'}" aria-checked="${picked}"${sol?' aria-disabled="true"':''}><span class="mk"></span><span>${esc(o)}</span>${tag}</button>`}).join('')+'</div>';
+ }
+ if(q.t==='yesno'){
+  return `<div class="yn-wrap"><table class="yn"><thead><tr><th></th><th>Yes</th><th>No</th></tr></thead><tbody>`+q.rows.map((r,i)=>{
+   const v=a[i],cor=q.a[i];
+   const cell=val=>`<td data-r="${i}" data-v="${val}"${sol&&cor===val?' class="key"':''}><input type="radio" tabindex="-1" name="yn-${id}-${i}" ${v===val?'checked':''} ${sol?'disabled':''} aria-label="${val?'Yes':'No'}"></td>`;
+   const verdict=sol?`<span class="verdict">${v===cor?'Đúng':'Sai, đáp án: '+(cor?'Yes':'No')}</span>`:'';
+   return `<tr class="${sol?(v===cor?'right':'wrong'):''}"><td class="st">${esc(r)}${verdict}</td>${cell(1)}${cell(0)}</tr>`}).join('')+'</tbody></table></div>';
+ }
+ if(q.t==='match'){
+  const placed=new Set(a.filter(v=>v!=null));
+  const order=S.orders[id]||q.items.map((_,i)=>i);
+  const chip=(i)=>`<div class="chip${selItem===i?' sel':''}" data-i="${i}" ${sol?'':'draggable="true" tabindex="0" role="button"'}>${esc(q.items[i])}${sol?'':MOVE}</div>`;
+  const pool=order.filter(i=>!placed.has(i)).map(chip).join('');
+  const rows=q.targets.map((t,k)=>{
+   let c='slot';if(sol)c+=a[k]===q.a[k]?' ok':' bad';else if(selItem!=null)c+=' armed';
+   const should=sol&&a[k]!==q.a[k]?`<div class="should">Đáp án: <b>${esc(q.items[q.a[k]])}</b></div>`:'';
+   return `<div class="pair"><div class="${c}" data-slot="${k}" aria-label="Ô trả lời cho: ${esc(t)}">${a[k]!=null?chip(a[k]):''}${should}</div><div class="target">${esc(t)}</div></div>`}).join('');
+  return `<div class="match"><div class="pool" aria-label="Các lựa chọn">${pool||'<div class="pool-empty">Đã dùng hết các mục</div>'}</div><div class="pairs">${rows}</div></div>`;
+ }
+ if(q.t==='hotspot')return `<div class="hsbox">${SVG[q.svg]()}</div>`;
+ return '';
+}
+function feedback(q,a,sol,tr,rev,id){
+ if(sol){
+  const ok=isCorrect(q,a), was=answered(q,a);
+  let key='';
+  if(q.t==='single')key=esc(q.o[q.a]);
+  else if(q.t==='multi')key=q.a.map(i=>esc(q.o[i])).join('; ');
+  else if(q.t==='match')key=q.targets.map((t,k)=>`${esc(t.length>40?t.slice(0,38)+'…':t)} → <b>${esc(q.items[q.a[k]])}</b>`).join('<br>');
+  return `<div class="fb-box"><div class="fb-head"><span class="pill ${ok?'ok':was?'bad':'warn'}">${ok?'Chính xác':was?'Chưa đúng':'Chưa trả lời'}</span><span>${DOMAINS[q.d]}</span></div>${key?`<p class="fb-key"><b>Đáp án đúng:</b><br>${key}</p>`:''}<p class="fb-exp"><b>Giải thích:</b> ${esc(q.e)}</p></div>`;
+ }
+ if(tr)return `<div class="fb-check"><button class="btn btn-end" id="bCheck" type="button" ${answered(q,a)?'':'disabled'}>Kiểm tra đáp án</button><span>hoặc bấm bóng đèn để xem đáp án</span></div>`;
+ return '';
+}
+function renderSegs(){
+ $('#segs').innerHTML=S.ids.map((id,i)=>{const q=QM[id],a=S.ans[id];let c='seg';
+  if(S.done||(S.mode==='train'&&S.chk[id]))c+=isCorrect(q,a)?' ok':' bad';
+  else if(S.mark[id])c+=' mk';else if(answered(q,a))c+=' ans';
+  if(i===S.cur)c+=' cur';
+  return `<button type="button" class="${c}" data-go="${i}" title="Câu ${i+1}" aria-label="Đến câu ${i+1}"></button>`}).join('');
+}
+function renderStat(){
+ const n=S.ids.length;let txt;
+ if(S.done)txt=`Đúng ${S.grade.c}/${n} · Điểm ${S.grade.score}/1000`;
+ else if(S.mode==='train'){const ch=S.ids.filter(id=>S.chk[id]);txt=`Đã kiểm tra ${ch.length}/${n} · Đúng ${ch.filter(id=>isCorrect(QM[id],S.ans[id])).length}`}
+ else{const k=S.ids.filter(id=>answered(QM[id],S.ans[id])).length,m=S.ids.filter(id=>S.mark[id]).length;txt=`Đã trả lời ${k}/${n}${m?` · Đánh dấu ${m}`:''}`}
+ $('#stat').textContent=txt;
+ $('#bSubmit').textContent=S.mode==='train'?'Kết thúc':'Nộp bài';
+}
+function setA(v){S.ans[curId()]=v;renderQ()}
+function go(i){if(i<0||i>=S.ids.length)return;selItem=null;S.cur=i;renderQ()}
+function place(item,slot){const a=S.ans[curId()].slice();const from=a.indexOf(item);const occ=a[slot];if(from>-1)a[from]=null;a[slot]=item;if(from>-1&&occ!=null&&from!==slot)a[from]=occ;setA(a)}
+function unplace(item){const a=S.ans[curId()].slice();const k=a.indexOf(item);if(k>-1){a[k]=null;setA(a)}else renderQ()}
+
+/* ---- sự kiện vùng trả lời ---- */
+const AN=$('#answers');
+AN.addEventListener('click',e=>{
+ if(!S||locked())return;const q=QM[curId()];
+ if(q.t==='single'||q.t==='multi'){const b=e.target.closest('.opt');if(!b)return;const i=+b.dataset.i;
+  if(q.t==='single')return setA(i);
+  let a=S.ans[curId()].slice();
+  if(a.includes(i))a=a.filter(x=>x!==i);
+  else{if(a.length>=q.a.length){note(`Câu này chỉ chọn ${q.a.length} đáp án. Bỏ chọn một đáp án trước khi chọn đáp án khác.`);return}a.push(i)}
+  return setA(a.sort((x,y)=>x-y));
+ }
+ if(q.t==='yesno'){const td=e.target.closest('td[data-r]');if(!td)return;const a=S.ans[curId()].slice();a[+td.dataset.r]=+td.dataset.v;return setA(a)}
+ if(q.t==='hotspot'){const g=e.target.closest('.hs');if(g)setA(+g.dataset.r);return}
+ if(q.t==='match'){
+  const chip=e.target.closest('.chip'),slot=e.target.closest('.slot');
+  if(slot){const k=+slot.dataset.slot;if(selItem!=null){const i=selItem;selItem=null;return place(i,k)}if(chip)return unplace(+chip.dataset.i);return}
+  if(chip){const i=+chip.dataset.i;selItem=selItem===i?null:i;return renderQ()}
+  if(selItem!=null){selItem=null;renderQ()}
+ }
+});
+AN.addEventListener('keydown',e=>{
+ if(e.key!=='Enter'&&e.key!==' ')return;const t=e.target;
+ if(t.classList&&(t.classList.contains('hs')||t.classList.contains('chip'))){e.preventDefault();t.dispatchEvent(new MouseEvent('click',{bubbles:true}))}
+});
+AN.addEventListener('dragstart',e=>{const c=e.target.closest&&e.target.closest('.chip');if(!c||locked())return;e.dataTransfer.setData('text/plain',c.dataset.i);e.dataTransfer.effectAllowed='move';c.classList.add('dragging')});
+AN.addEventListener('dragend',()=>AN.querySelectorAll('.dragging,.over').forEach(x=>x.classList.remove('dragging','over')));
+AN.addEventListener('dragover',e=>{const z=e.target.closest&&e.target.closest('.slot,.pool');if(!z||locked())return;e.preventDefault();AN.querySelectorAll('.over').forEach(x=>{if(x!==z)x.classList.remove('over')});z.classList.add('over')});
+AN.addEventListener('drop',e=>{const z=e.target.closest&&e.target.closest('.slot,.pool');if(!z||locked())return;e.preventDefault();const raw=e.dataTransfer.getData('text/plain');if(raw==='')return;const i=+raw;selItem=null;if(z.classList.contains('slot'))place(i,+z.dataset.slot);else unplace(i)});
+
+$('#fb').addEventListener('click',e=>{if(e.target.closest('#bCheck')){S.chk[curId()]=true;renderQ()}});
+$('#segs').addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)go(+b.dataset.go)});
+
+/* ---- thanh công cụ ---- */
+$('#bPrev').onclick=()=>go(S.cur-1);
+$('#bNext').onclick=()=>{if(S.cur<S.ids.length-1)go(S.cur+1);else if(!S.done)openList()};
+$('#bSkip').onclick=()=>{const id=curId();if(!answered(QM[id],S.ans[id]))S.skip[id]=true;if(S.cur<S.ids.length-1)go(S.cur+1);else{renderQ();openList()}};
+$('#bReset').onclick=()=>{if(S.done)return;const id=curId();S.ans[id]=blank(QM[id]);delete S.chk[id];selItem=null;renderQ()};
+$('#markChk').onchange=e=>{S.mark[curId()]=e.target.checked;renderSegs();renderStat();save()};
+$('#bList').onclick=()=>openList();
+$('#bFont').onclick=()=>{fontIdx=(fontIdx+1)%SCALES.length;store.set(K.font,fontIdx);applyFont()};
+$('#bHint').onclick=()=>{if(S.mode!=='train')return;S.chk[curId()]=true;renderQ()};
+$('#bSave').onclick=()=>{save();stopTimer();toast('Đã lưu bài làm. Bạn có thể tiếp tục từ trang chủ.');renderHome()};
+$('#bHome').onclick=()=>{if(S.done){showResult();return}save();stopTimer();renderHome()};
+$('#bSubmit').onclick=()=>openSubmit();
+$('#bResult').onclick=()=>showResult();
+
+/* ===================== HỘP THOẠI ===================== */
+function openModal(html){$('#modalBox').innerHTML=html;$('#modal').hidden=false;const f=$('#modalBox').querySelector('button');if(f)f.focus()}
+function closeModal(){$('#modal').hidden=true}
+$('#modal').addEventListener('click',e=>{if(e.target.id==='modal'||e.target.closest('[data-close]'))closeModal()});
+let listFilter='all';
+function openList(f){
+ if(f)listFilter=f;
+ const tabs=[['all','Tất cả'],['un','Chưa trả lời'],['mk','Đánh dấu'],['skip','Đã bỏ qua']];
+ const cells=S.ids.map((id,i)=>{const q=QM[id],a=S.ans[id],an=answered(q,a);
+  if(listFilter==='un'&&an)return '';if(listFilter==='mk'&&!S.mark[id])return '';if(listFilter==='skip'&&!(S.skip[id]&&!an))return '';
+  let c='qcell';if(S.done||(S.mode==='train'&&S.chk[id]))c+=isCorrect(q,a)?' ok':' bad';else if(an)c+=' ans';
+  if(S.mark[id])c+=' mk';if(S.skip[id]&&!an)c+=' skip';if(i===S.cur)c+=' cur';
+  return `<button type="button" class="${c}" data-goto="${i}" title="Câu ${i+1} · ${esc(DOMAINS[q.d])}">${i+1}</button>`}).join('');
+ const n=S.ids.length,un=S.ids.filter(id=>!answered(QM[id],S.ans[id])).length;
+ openModal(`<h2>Danh sách câu hỏi</h2>
+  ${S.done?'':`<p>Đã trả lời <b>${n-un}/${n}</b> câu. Chọn một ô để chuyển đến câu đó.</p>`}
+  <div class="tabs">${tabs.map(([k,l])=>`<button type="button" class="tab${listFilter===k?' on':''}" data-filter="${k}">${l}</button>`).join('')}</div>
+  <div class="cells">${cells||'<p class="foot-note">Không có câu nào trong mục này.</p>'}</div>
+  <div class="legend">${S.done?'<span><i class="ok"></i>Đúng</span><span><i class="bad"></i>Sai</span>':'<span><i class="ans"></i>Đã trả lời</span><span><i></i>Chưa trả lời</span><span><i class="mk"></i>Đánh dấu xem lại</span><span><i class="skip"></i>Đã bỏ qua</span>'}</div>
+  <div class="mfoot"><button type="button" class="btn btn-line" data-close>Đóng</button>${S.done?'':`<button type="button" class="btn btn-end" id="mToSubmit">${S.mode==='train'?'Kết thúc luyện tập':'Nộp bài'}</button>`}</div>`);
+}
+$('#modalBox').addEventListener('click',e=>{
+ const g=e.target.closest('[data-goto]');if(g){closeModal();go(+g.dataset.goto);return}
+ const f=e.target.closest('[data-filter]');if(f){openList(f.dataset.filter);return}
+ if(e.target.closest('#mToSubmit')){openSubmit();return}
+ if(e.target.closest('#mSubmit')){closeModal();finish();return}
+});
+function openSubmit(){
+ const n=S.ids.length,un=S.ids.filter(id=>!answered(QM[id],S.ans[id])).length,mk=S.ids.filter(id=>S.mark[id]).length;
+ const train=S.mode==='train';
+ openModal(`<h2>${train?'Kết thúc luyện tập?':'Nộp bài thi?'}</h2>
+  <p>Bạn đã trả lời <b>${n-un}/${n}</b> câu.${un?` Còn <b>${un}</b> câu chưa trả lời (sẽ tính là sai).`:''}${mk?` Có <b>${mk}</b> câu đang đánh dấu xem lại.`:''}</p>
+  <p>${train?'Kết quả sẽ được chấm cho toàn bộ các câu trong phiên.':'Sau khi nộp, bạn không thể thay đổi đáp án.'}</p>
+  <div class="mfoot"><button type="button" class="btn btn-line" data-close>Quay lại làm bài</button><button type="button" class="btn btn-end" id="mSubmit">${train?'Kết thúc & xem kết quả':'Nộp bài & xem điểm'}</button></div>`);
+}
+
+/* ===================== CHẤM ĐIỂM ===================== */
+function grade(){
+ const per=DOMAINS.map(()=>({n:0,c:0}));let c=0;
+ const res=S.ids.map(id=>{const q=QM[id],ok=isCorrect(q,S.ans[id]);per[q.d].n++;if(ok){per[q.d].c++;c++}return ok});
+ return {c,n:S.ids.length,per,res,score:Math.round(c/S.ids.length*1000),un:S.ids.filter(id=>!answered(QM[id],S.ans[id])).length};
+}
+function finish(){
+ stopTimer();S.done=true;S.grade=grade();S.finished=Date.now();selItem=null;
+ const g=S.grade,hist=store.get(K.hist,[]);
+ hist.unshift({t:S.finished,m:S.mode,title:S.title||'',n:g.n,c:g.c,s:g.score,sec:S.elapsed});store.set(K.hist,hist.slice(0,40));
+ const w=new Set(store.get(K.wrong,[]));
+ S.ids.forEach((id,i)=>{if(g.res[i])w.delete(id);else if(S.mode==='test'||answered(QM[id],S.ans[id]))w.add(id)});
+ store.set(K.wrong,[...w]);store.del(K.sess);showResult();
+}
+let resFilter='all';
+function showResult(){
+ stopTimer();show('result');
+ const g=S.grade,pass=g.score>=PASS,train=S.mode==='train';
+ const wrongIds=S.ids.filter((id,i)=>!g.res[i]);
+ const bars=g.per.map((p,d)=>p.n?`<div class="bar-row"><span>${DOMAINS[d]}</span><div class="track"><div class="fill${p.c/p.n<.7?' low':''}" style="width:${Math.round(p.c/p.n*100)}%"></div></div><span class="num">${p.c}/${p.n}</span></div>`:'').join('');
+ const cells=S.ids.map((id,i)=>(resFilter==='bad'&&g.res[i])?'':`<button type="button" class="qcell ${g.res[i]?'ok':'bad'}" data-review="${i}" title="Câu ${i+1} · ${esc(DOMAINS[QM[id].d])}">${i+1}</button>`).join('');
+ $('#result').innerHTML=`<div class="page">
+  <header class="score-head">
+   <div><p class="eyebrow">${S.name?esc(S.name)+' · ':''}${train?'Kết quả luyện tập':'Kết quả thi thử'} · ${new Date(S.finished||Date.now()).toLocaleString('vi-VN')}</p>
+   <div class="score">${g.score}<small> / 1000</small></div>
+   <p style="margin:10px 0 0"><span class="pill ${pass?'ok':'bad'}">${pass?'Đạt':'Chưa đạt'}</span> <span class="foot-note">Ngưỡng đạt tham khảo ${PASS}/1000</span></p></div>
+   <div class="row"><button class="btn btn-line" id="rHome" type="button">Về trang chủ</button><button class="btn" id="rReview" type="button">Xem lại bài làm</button>${wrongIds.length?`<button class="btn btn-end" id="rRetry" type="button">Luyện lại ${wrongIds.length} câu sai</button>`:''}</div>
+  </header>
+  <dl class="facts" style="margin:0"><div><dt>Câu đúng</dt><dd>${g.c}<small> / ${g.n}</small></dd></div><div><dt>Tỷ lệ đúng</dt><dd>${Math.round(g.c/g.n*100)}%</dd></div><div><dt>Thời gian làm</dt><dd>${fmt(S.elapsed)}</dd></div><div><dt>Chưa trả lời</dt><dd>${g.un}</dd></div></dl>
+  <section class="sec"><h2>Kết quả theo lĩnh vực</h2><div class="bars">${bars}</div><p class="foot-note">Lĩnh vực dưới 70% hiển thị màu đỏ. Hãy luyện riêng lĩnh vực đó từ trang chủ.</p></section>
+  <section class="sec"><div class="sec-head"><h2>Chi tiết từng câu</h2><div class="tabs" style="margin:0"><button type="button" class="tab${resFilter==='all'?' on':''}" data-rf="all">Tất cả</button><button type="button" class="tab${resFilter==='bad'?' on':''}" data-rf="bad">Chỉ câu sai</button></div></div>
+   <div class="cells">${cells||'<p class="foot-note">Không có câu sai. Rất tốt!</p>'}</div>
+   <div class="legend"><span><i class="ok"></i>Đúng</span><span><i class="bad"></i>Sai hoặc chưa trả lời</span><span>Chọn một ô để xem lại câu hỏi, đáp án đúng và giải thích.</span></div></section>
+ </div>`;
+ $('#rHome').onclick=()=>renderHome();
+ $('#rReview').onclick=()=>{S.cur=0;openExam()};
+ if($('#rRetry'))$('#rRetry').onclick=()=>newSession('train',shuffle(wrongIds),'Câu sai');
+ $('#result').querySelectorAll('[data-review]').forEach(b=>b.onclick=()=>{S.cur=+b.dataset.review;openExam()});
+ $('#result').querySelectorAll('[data-rf]').forEach(b=>b.onclick=()=>{resFilter=b.dataset.rf;showResult()});
+}
+
+/* ===================== TRANG CHỦ ===================== */
+function renderHome(){
+ stopTimer();show('home');
+ const sess=loadSession(),hist=store.get(K.hist,[]),wrong=store.get(K.wrong,[]).filter(id=>QM[id]);
+ const cnt=DOMAINS.map((_,d)=>BANK.filter(q=>q.d===d).length);
+ const wrongBy=DOMAINS.map((_,d)=>wrong.filter(id=>QM[id].d===d).length);
+ const tests=hist.filter(h=>h.m==='test');const best=tests.length?Math.max(...tests.map(h=>h.s)):null;
+ let resume='';
+ if(sess){const k=sess.ids.filter(id=>answered(QM[id],sess.ans[id])).length;
+  resume=`<div class="resume"><div><b>Bạn có bài ${sess.mode==='test'?'thi thử':'luyện tập'} đang làm dở</b><span class="foot-note">Câu ${sess.cur+1}/${sess.ids.length} · đã trả lời ${k} câu · ${sess.limit?'còn '+fmt(sess.limit-sess.elapsed):'đã làm '+fmt(sess.elapsed)}</span></div><div class="row"><button class="btn btn-danger" id="hDrop" type="button">Hủy bài làm</button><button class="btn" id="hResume" type="button">Tiếp tục làm bài</button></div></div>`}
+ $('#home').innerHTML=`
+ <div class="titlebar"><span class="brand">IC3 GS6 Spark · Level 2</span><span class="mode">Ngân hàng ${BANK.length} câu hỏi</span></div>
+ <div class="page">
+  <header class="hero">
+   <p class="eyebrow">IC3 Digital Literacy GS6 Spark · Level 2</p>
+   <h1>Luyện thi IC3 GS6 Spark Level 2 như thi thật</h1>
+   <p class="lede">Dành cho học sinh ôn thi chứng chỉ IC3 GS6 Spark Level 2. Giao diện giống phần mềm thi trên máy: nút Trước / Đặt lại / Bỏ qua / Tiếp, đánh dấu xem lại, danh sách câu, đồng hồ đếm ngược. Có đủ 5 dạng câu: một đáp án, nhiều đáp án, Yes/No, kéo-thả ghép cặp hoặc sắp xếp, và nhấp vào hình.</p>
+   <div class="row" style="margin-top:16px"><label for="cand">Họ tên thí sinh</label><input id="cand" type="text" maxlength="60" placeholder="Nhập họ tên để lưu vào kết quả" value="${esc(store.get(K.name,''))}" style="font:inherit;padding:7px 10px;border:1px solid var(--line-strong);border-radius:3px;background:var(--paper);color:var(--ink);min-width:0;flex:1 1 240px;max-width:360px"></div>
+   <dl class="facts"><div><dt>Số câu mỗi đề</dt><dd>${TEST_N}</dd></div><div><dt>Thời gian</dt><dd>${TEST_MIN}<small> phút</small></dd></div><div><dt>Thang điểm</dt><dd>1000</dd></div><div><dt>Điểm cao nhất của bạn</dt><dd>${best==null?'–':best}</dd></div></dl>
+  </header>
+  ${resume}
+  <section class="modes">
+   <div class="card">
+    <p class="eyebrow" style="margin:0">Testing mode</p>
+    <h2>Thi thử</h2>
+    <ul><li>${TEST_N} câu ngẫu nhiên, trải đều 7 lĩnh vực</li><li>Đếm ngược ${TEST_MIN} phút, hết giờ tự nộp bài</li><li>Không hiện đáp án cho đến khi nộp bài</li><li>Chấm điểm thang 1000, phân tích theo lĩnh vực</li></ul>
+    <div class="actions"><button class="btn btn-end" id="hTest" type="button">Bắt đầu thi thử</button></div>
+   </div>
+   <div class="card">
+    <p class="eyebrow" style="margin:0">Training mode</p>
+    <h2>Luyện tập</h2>
+    <p>Kiểm tra đáp án ngay sau mỗi câu, có giải thích chi tiết. Không giới hạn thời gian.</p>
+    <div class="chips">${DOMAINS.map((d,i)=>`<label class="cb"><input type="checkbox" id="dm${i}" checked> ${d} <span class="foot-note">(${cnt[i]})</span></label>`).join('')}</div>
+    <div class="row"><label for="trCount">Số câu</label><select id="trCount"><option value="10">10</option><option value="20" selected>20</option><option value="45">45</option><option value="999">Tất cả</option></select><label><input type="checkbox" id="trShuf" checked> Xáo trộn thứ tự</label></div>
+    <div class="actions"><button class="btn btn-end" id="hTrain" type="button">Bắt đầu luyện tập</button><button class="btn btn-line" id="hWrong" type="button" ${wrong.length?'':'disabled'}>Ôn ${wrong.length} câu từng làm sai</button></div>
+   </div>
+  </section>
+  <section class="sec">
+   <h2>Luyện theo lĩnh vực</h2>
+   <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Lĩnh vực</th><th class="num">Số câu</th><th class="num">Đang sai</th><th></th></tr></thead><tbody>
+   ${DOMAINS.map((d,i)=>`<tr><td>${d}</td><td class="num">${cnt[i]}</td><td class="num">${wrongBy[i]?`<span class="pill bad">${wrongBy[i]}</span>`:'0'}</td><td class="num"><button class="btn btn-line small-btn" data-dom="${i}" type="button">Luyện</button></td></tr>`).join('')}
+   </tbody></table></div>
+  </section>
+  <section class="sec">
+   <div class="sec-head"><h2>Lịch sử làm bài</h2>${hist.length?'<button class="btn btn-danger small-btn" id="hClear" type="button">Xóa lịch sử</button>':''}</div>
+   <div class="tbl-wrap">${hist.length?`<table class="tbl"><thead><tr><th>Thời điểm</th><th>Chế độ</th><th class="num">Đúng</th><th class="num">Điểm</th><th class="num">Thời gian</th><th>Kết quả</th></tr></thead><tbody>
+   ${hist.slice(0,15).map(h=>`<tr><td>${new Date(h.t).toLocaleString('vi-VN',{dateStyle:'short',timeStyle:'short'})}</td><td>${h.m==='test'?'Thi thử':'Luyện tập'}${h.title?' · '+esc(h.title):''}</td><td class="num">${h.c}/${h.n}</td><td class="num">${h.s}</td><td class="num">${fmt(h.sec)}</td><td><span class="pill ${h.s>=PASS?'ok':'bad'}">${h.s>=PASS?'Đạt':'Chưa đạt'}</span></td></tr>`).join('')}
+   </tbody></table>`:'<div class="empty">Chưa có lượt làm bài nào. Kết quả mỗi lần thi thử hoặc luyện tập sẽ được lưu ở đây, trên trình duyệt này.</div>'}</div>
+  </section>
+  <p class="foot-note">Ngân hàng 100 câu được biên soạn theo 7 lĩnh vực của IC3 GS6 (Cơ bản về công nghệ, Công dân số, Quản lý thông tin, Tạo nội dung, Giao tiếp, Cộng tác, An toàn &amp; bảo mật) ở mức Level 2, với tình huống gần gũi học sinh. Đây là tài liệu tự luyện, không phải đề thi chính thức của Certiport/IIG. Tiến độ và lịch sử chỉ lưu trên trình duyệt của bạn. Phím tắt khi làm bài: ← / → để chuyển câu.</p>
+ </div>`;
+ $('#cand').oninput=e=>store.set(K.name,e.target.value.trim());
+ $('#hTest').onclick=()=>newSession('test',pickTest(TEST_N),'');
+ $('#hTrain').onclick=()=>{
+  const ds=DOMAINS.map((_,i)=>$('#dm'+i).checked);
+  let ids=BANK.filter(q=>ds[q.d]).map(q=>q.id);
+  if($('#trShuf').checked)ids=shuffle(ids);
+  ids=ids.slice(0,+$('#trCount').value);
+  newSession('train',ids,ds.every(Boolean)?'':ds.filter(Boolean).length===1?DOMAINS[ds.indexOf(true)]:'Tùy chọn');
+ };
+ $('#hWrong').onclick=()=>newSession('train',shuffle(wrong),'Câu sai');
+ $('#home').querySelectorAll('[data-dom]').forEach(b=>b.onclick=()=>{const d=+b.dataset.dom;newSession('train',shuffle(BANK.filter(q=>q.d===d).map(q=>q.id)),DOMAINS[d])});
+ if($('#hResume'))$('#hResume').onclick=()=>{S=sess;selItem=null;openExam()};
+ if($('#hDrop'))$('#hDrop').onclick=e=>armConfirm(e.currentTarget,()=>{store.del(K.sess);renderHome()});
+ if($('#hClear'))$('#hClear').onclick=e=>armConfirm(e.currentTarget,()=>{store.del(K.hist);renderHome()});
+}
+function loadSession(){
+ const s=store.get(K.sess,null);
+ if(!s||!Array.isArray(s.ids)||s.done)return null;
+ s.ids=s.ids.filter(id=>QM[id]&&s.ans&&id in s.ans);
+ if(!s.ids.length)return null;
+ s.cur=Math.min(s.cur||0,s.ids.length-1);s.mark=s.mark||{};s.skip=s.skip||{};s.chk=s.chk||{};s.orders=s.orders||{};
+ return s;
+}
+
+/* ===================== PHÍM TẮT ===================== */
+document.addEventListener('keydown',e=>{
+ if(!$('#modal').hidden){if(e.key==='Escape')closeModal();return}
+ if($('#exam').hidden||!S)return;
+ const tag=(e.target.tagName||'').toLowerCase();if(tag==='input'||tag==='select'||tag==='textarea')return;
+ if(e.key==='ArrowRight'){e.preventDefault();$('#bNext').click()}
+ else if(e.key==='ArrowLeft'){e.preventDefault();go(S.cur-1)}
+});
+window.addEventListener('pagehide',save);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)save()});
+
+renderHome();
+</script>
+
+</html>
